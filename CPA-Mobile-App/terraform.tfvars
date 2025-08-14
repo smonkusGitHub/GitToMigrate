@@ -4,7 +4,7 @@
 location          = "australiaeast"
 tags = {
   Product         = "Mobile App"
-  Environment     = "Test"
+  Environment     = "Development"
   "Support Owner" = "ADIS Squad"
   CreatedWith     = "Terraform"
 }

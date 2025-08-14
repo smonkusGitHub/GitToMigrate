@@ -16,7 +16,7 @@ variable "project_long_name" {
 
 variable "environment_short_name" {
   description = "The environment name for the solution, used for naming purposes."
-  default = "tst"
+  default = "dev"
   type        = string
 }
 
