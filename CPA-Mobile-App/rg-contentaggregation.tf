@@ -34,28 +34,28 @@ module "avm-res-resources-resourcegroup-content" {
 #       }
 # }
 
-# # ------------------------------------------------------------
-# # Azurerm - Notification Hub Namespace
-# # ------------------------------------------------------------
-# resource "azurerm_notification_hub_namespace" "hub-ns1" {
-#     name                            = local.notification_hub_ns_name_contentaggregation
-#     resource_group_name             = module.avm-res-resources-resourcegroup-content.name
-#     location                        = var.location
-#     tags                            = var.tags
-#     namespace_type                  = "NotificationHub"
-#     sku_name                        = "Free"
-# }
+# ------------------------------------------------------------
+# Azurerm - Notification Hub Namespace
+# ------------------------------------------------------------
+resource "azurerm_notification_hub_namespace" "hub-ns1" {
+    name                            = local.notification_hub_ns_name_contentaggregation
+    resource_group_name             = module.avm-res-resources-resourcegroup-content.name
+    location                        = var.location
+    tags                            = var.tags
+    namespace_type                  = "NotificationHub"
+    sku_name                        = "Free"
+}
 
-# # ------------------------------------------------------------
-# # Azurerm - Notification Hub
-# # ------------------------------------------------------------
-# resource "azurerm_notification_hub" "hub1" {
-#     name                            = local.notification_hub_name_contentaggregation
-#     namespace_name                  = azurerm_notification_hub_namespace.hub-ns1.name
-#     resource_group_name             = module.avm-res-resources-resourcegroup-content.name
-#     location                        = var.location
-#     tags                            = var.tags    
-# }
+# ------------------------------------------------------------
+# Azurerm - Notification Hub
+# ------------------------------------------------------------
+resource "azurerm_notification_hub" "hub1" {
+    name                            = local.notification_hub_name_contentaggregation
+    namespace_name                  = azurerm_notification_hub_namespace.hub-ns1.name
+    resource_group_name             = module.avm-res-resources-resourcegroup-content.name
+    location                        = var.location
+    tags                            = var.tags    
+}
 
 # # resource "azapi_update_resource" "notification_hub_fcm" {
 # #   type      = "Microsoft.NotificationHubs/namespaces/notificationHubs@2023-10-01-preview"
