@@ -34,43 +34,43 @@ module "avm-res-resources-resourcegroup-content" {
 #       }
 # }
 
-# ------------------------------------------------------------
-# Azurerm - Notification Hub Namespace
-# ------------------------------------------------------------
-resource "azurerm_notification_hub_namespace" "hub-ns1" {
-    name                            = local.notification_hub_ns_name_contentaggregation
-    resource_group_name             = module.avm-res-resources-resourcegroup-content.name
-    location                        = var.location
-    tags                            = var.tags
-    namespace_type                  = "NotificationHub"
-    sku_name                        = "Free"
-}
+# # ------------------------------------------------------------
+# # Azurerm - Notification Hub Namespace
+# # ------------------------------------------------------------
+# resource "azurerm_notification_hub_namespace" "hub-ns1" {
+#     name                            = local.notification_hub_ns_name_contentaggregation
+#     resource_group_name             = module.avm-res-resources-resourcegroup-content.name
+#     location                        = var.location
+#     tags                            = var.tags
+#     namespace_type                  = "NotificationHub"
+#     sku_name                        = "Free"
+# }
 
-# ------------------------------------------------------------
-# Azurerm - Notification Hub
-# ------------------------------------------------------------
-resource "azurerm_notification_hub" "hub1" {
-    name                            = local.notification_hub_name_contentaggregation
-    namespace_name                  = azurerm_notification_hub_namespace.hub-ns1.name
-    resource_group_name             = module.avm-res-resources-resourcegroup-content.name
-    location                        = var.location
-    tags                            = var.tags    
-}
+# # ------------------------------------------------------------
+# # Azurerm - Notification Hub
+# # ------------------------------------------------------------
+# resource "azurerm_notification_hub" "hub1" {
+#     name                            = local.notification_hub_name_contentaggregation
+#     namespace_name                  = azurerm_notification_hub_namespace.hub-ns1.name
+#     resource_group_name             = module.avm-res-resources-resourcegroup-content.name
+#     location                        = var.location
+#     tags                            = var.tags    
+# }
 
-resource "azapi_resource" "hub_fcm_v1" {
-  type      = "Microsoft.NotificationHubs/namespaces/notificationHubs/fcmv1@2023-10-01-preview"
-  name      = "fcmv1"
-  parent_id = azurerm_notification_hub.hub1.id
-  schema_validation_enabled = false
+# resource "azapi_resource" "hub_fcm_v1" {
+#   type      = "Microsoft.NotificationHubs/namespaces/notificationHubs/fcmv1@2023-10-01-preview"
+#   name      = "fcmv1"
+#   parent_id = azurerm_notification_hub.hub1.id
+#   schema_validation_enabled = false
 
-    body = {
-    properties = {
-      clientEmail = local.notification_hub_gcp_client_email
-      privateKey  = local.notification_hub_gcp_private_key
-      projectId   = local.notification_hub_gcp_project_id
-    }
-  }
-}
+#     body = {
+#     properties = {
+#       clientEmail = local.notification_hub_gcp_client_email
+#       privateKey  = local.notification_hub_gcp_private_key
+#       projectId   = local.notification_hub_gcp_project_id
+#     }
+#   }
+# }
 
 
 # # Apply Google FCM v1 Credentials
