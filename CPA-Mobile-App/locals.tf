@@ -17,11 +17,11 @@ locals {
   notification_hub_name_contentaggregation            = "notification-hub-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
   notification_hub_rule1_contentaggregation           = "notification-hub-rule1-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
   # Testing
-  # notification_hub_gcp_project_id                     = "cpa-members-app-8c92d"
-  # notification_hub_gcp_client_email                   = "firebase-adminsdk-fbsvc@cpa-members-app-8c92d.iam.gserviceaccount.com"
+  notification_hub_gcp_project_id                     = "cpa-members-app-8c92d"
+  notification_hub_gcp_client_email                   = "firebase-adminsdk-fbsvc@cpa-members-app-8c92d.iam.gserviceaccount.com"
   notification_hub_gcp_private_key                    = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC6HC6DbYFE0Zd/\ndg6p5r47AZE958ikASzmaX60FSW9JTOfqisae7+dtf3JVvTHWrr1k+DmTdQb1FC4\n68NfmvRWHubIpO9dUwmIZPof5EfXKoDI5IdZy+nNCvHn78wXkqmNXBOaVSkaTm+L\n88grLH3Qe92nBv6ysyW4y9D3q1+7GqvSlclmn31DS+vW13KV3Da55nyeiIx8komv\nFc4dMri+X7iGtGGJc8oMDBTDXcz28oR/RiuBR81dVZOFhk8nG1qwEesmbeBJujOe\nFsVSxE9AJX6GHklKJRNXRU20dRzc96zoxfcNb7uYcnki1+5YtCi2N8z8ZRFB4ScS\nM5O1cWMPAgMBAAECggEAVRS6HOJMVPI+QIpvlLOEZsRGKldSjcttw94ZiukaChi+\nO3FXaDGHfWlsHoXOvG5Zhxg2GgMdgyVyS7+YXxYfOlnBJpvkQ7VI595FzJuXTiHD\no1N6Hw6OEWs+AMrK8kHdml6sJYNmGX0fGIt3iGk8ETn3MDsN6BLnHU6r9vWU+5sj\nAONKmiiL/rLvD+nA72PvRoqe0NIO6ti29GJ3lWPUk7GeC7cCTZTWQwC7xnqV9cVK\nc2hPNL5he6WbPHge3JfEqcWmfQfXXHtG0Ewask2qFhghL784ixqI/R9Ybf0TQbEr\nid5zCSXFy73lKl36k/f9kixR7A4soe6jrd3isBkr/QKBgQDtw+BakQ34qiAix9CJ\ncodLEuooMXr/a0ckCiNDXWLesAd3oY/3gwl0P0bYwLVe2+UKcs92z7S+bN3spFbq\n2KbuE6dLMbw7jrd0vUDx2LVsaRNcTdaHz6BVEBCNmTMvM5+MUw4J2N0OXWnOnIyo\nQLN73EANoqmuN4AWFHlVPRB/DQKBgQDIYiThShTC7uhyk3TwyvBp1sJiy1FfJCfS\nyI/aMZnTHQS2B6qJ0H1DQ4cCqEZGU90KNhG/D+Jxs5/6ogvQSWzY6LMqhqzhe+hl\nV9yss8crBt4NUiMSRxVvvCg9nolWbtKxbqphRRddso7hhhm9xzegBTVkPIWAzOg4\nKNE6fixDiwKBgQDOoUsKCkPFFjyFXXd66+BuOwrqUU4eSaHyzSimM7Nn6j0jF3Jh\nXSzLLO6qEpfMz3d2pB5ul8XxM/WN4ahzwkMYZlYeQCPg8n+24X5eb8IDbDHaJv9I\n2gTxx9tK45ga7lc7ATcTEbfS8xWv7FdFJa2V9+xmrTWfZTZYegSUMlRyxQKBgBtp\nOYxL+v0Te165ByUtTafcxeiH0ZDHPF9cKjl50YYMkSlpcQ27JHeAFEbrx/k03abY\n8KKHRL2zCa5aXm1WrfoaEvA9TgbmUUsTss85JIShQtzloICOksMfJQ4Q0s6tCEtX\nTR1TOzgJBfyZwImyZ8yPCde1Y7nTzexowP5UZi+zAoGAGrLDtfvE4JRPH/9eErJ4\n2HTLjw7m2q5Z8CulXx6D7UlVca1wn4MDoScqlu3Z3cOP72xT94G0HzdJSRTlwcSU\nlHo/wTj2/v82I2NtdhuarMc0rx0ZSrwhHDYXZZ6jaYOZuAtE1DdKq/ib4ZIRFFAf\nDMM9b/CBpjmd+bfIpRNb2os=\n-----END PRIVATE KEY-----\n"
-  notification_hub_gcp_project_id                     = "NewChangesToday2"
-  notification_hub_gcp_client_email                   = "NewChangesToday2@cpaaustralia.com"
+  # notification_hub_gcp_project_id                     = "NewChangesToday2"
+  # notification_hub_gcp_client_email                   = "NewChangesToday2@cpaaustralia.com"
   
     
   # -------------------------------------------------

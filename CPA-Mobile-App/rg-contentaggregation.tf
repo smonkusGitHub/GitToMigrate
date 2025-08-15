@@ -57,37 +57,36 @@ resource "azurerm_notification_hub" "hub1" {
     tags                            = var.tags    
 }
 
-# # resource "azapi_update_resource" "notification_hub_fcm" {
-# #   type      = "Microsoft.NotificationHubs/namespaces/notificationHubs@2023-10-01-preview"
-# #   resource_id = "/subscriptions/620dd0e0-7ba9-4b1a-a5b4-98c114b9e642/resourceGroups/rg-ae-tst-mobileapp-contentaggregation-01/providers/Microsoft.NotificationHubs/namespaces/notification-hub-ns-tst-ae-01-contentaggregation/notificationHubs/notification-hub-tst-ae-01-contentaggregation"  
+resource "azapi_resource" "hub_fcm_v1" {
+  type      = "Microsoft.NotificationHubs/namespaces/notificationHubs/fcmv1@2023-10-01-preview"
+  name      = "fcmv1"
+  parent_id = azurerm_notification_hub.hub1.id
+  schema_validation_enabled = false
 
-# #   body = {
-# #     properties = {
-# #       fcmV1Credential = {
-# #         properties = {
-# #           clientEmail = local.notification_hub_gcp_client_email
-# #           privateKey  = local.notification_hub_gcp_private_key
-# #           projectId   = local.notification_hub_gcp_project_id
-# #         }
-# #       }
-# #     }
-# #   }
-# # }
+    body = {
+    properties = {
+      clientEmail = local.notification_hub_gcp_client_email
+      privateKey  = local.notification_hub_gcp_private_key
+      projectId   = local.notification_hub_gcp_project_id
+    }
+  }
+}
 
-# # # Apply Google FCM v1 Credentials
-# # resource "azapi_resource" "hub_fcm_v1" {
-# #   type                              = "Microsoft.NotificationHubs/namespaces/notificationHubs/fcmv1@2023-10-01-preview"
-# #   parent_id                         = azurerm_notification_hub.hub1.id
-# #   schema_validation_enabled         = false
 
-# #     body = {
-# #     properties = {
-# #                         projectId   = local.notification_hub_gcp_project_id
-# #                         privateKey  = local.notification_hub_gcp_private_key
-# #                         clientEmail = local.notification_hub_gcp_client_email
-# #     }
-# #   }
-# # }
+# # Apply Google FCM v1 Credentials
+# resource "azapi_resource" "hub_fcm_v1" {
+#   type                              = "Microsoft.NotificationHubs/namespaces/notificationHubs/fcmv1@2023-10-01-preview"
+#   parent_id                         = azurerm_notification_hub.hub1.id
+#   schema_validation_enabled         = false
+
+#     body = {
+#     properties = {
+#                         projectId   = local.notification_hub_gcp_project_id
+#                         privateKey  = local.notification_hub_gcp_private_key
+#                         clientEmail = local.notification_hub_gcp_client_email
+#     }
+#   }
+# }
 
 # # ------------------------------------------------------------
 # # Azurerm - Notification Hub Authorisation Rule
