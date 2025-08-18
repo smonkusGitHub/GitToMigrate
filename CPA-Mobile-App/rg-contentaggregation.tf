@@ -9,46 +9,51 @@ module "avm-res-resources-resourcegroup-content" {
     tags                            = var.tags
 }
 
-resource "azapi_resource" "notificationHubNameSpace" {
-    type                            = "Microsoft.NotificationHubs/namespaces@2023-10-01-preview"
-    parent_id                       = module.avm-res-resources-resourcegroup-content.resource_id
-    name                            = local.notification_hub_ns_name_contentaggregation
-    location                        = var.location
-    tags                            = var.tags  
-    body = {
-            properties = {
-                enabled             = true
-                namespaceType       = "NotificationHub"      
-            }
-                sku = {
-                name                = "Free"
-            }
-    }
-    schema_validation_enabled       = false
-    response_export_values          = ["*"]
-}
+# ------------------------------------------------------------
+# AzApi - Notification Hub Namespace
+# ------------------------------------------------------------
+# resource "azapi_resource" "notificationHubNameSpace" {
+#     type                            = "Microsoft.NotificationHubs/namespaces@2023-10-01-preview"
+#     parent_id                       = module.avm-res-resources-resourcegroup-content.resource_id
+#     name                            = local.notification_hub_ns_name_contentaggregation
+#     location                        = var.location
+#     tags                            = var.tags  
+#     body = {
+#             properties = {
+#                 enabled             = true
+#                 namespaceType       = "NotificationHub"      
+#             }
+#                 sku = {
+#                 name                = "Free"
+#             }
+#     }
+#     schema_validation_enabled       = false
+#     response_export_values          = ["*"]
+# }
 
-resource "azapi_resource" "notificationHub" {
-    type                            = "Microsoft.NotificationHubs/namespaces/notificationHubs@2023-10-01-preview"
-    parent_id                       = azapi_resource.notificationHubNameSpace.id
-    name                            = local.notification_hub_name_contentaggregation
-    location                        = var.location
-    tags                            = var.tags  
-    body = {
-            properties = {
-                fcmV1Credential = {
-                    properties = {
-                        clientEmail = local.notification_hub_gcp_client_email
-                        #privateKey  = local.notification_hub_gcp_private_key
-                        privateKey  = null
-                        projectId   = local.notification_hub_gcp_project_id
-                }
-            }
-        }
-    }
-    schema_validation_enabled       = false
-    response_export_values          = ["*"]
-}
+# ------------------------------------------------------------
+# AzApi - Notification Hub
+# ------------------------------------------------------------
+# resource "azapi_resource" "notificationHub" {
+#     type                            = "Microsoft.NotificationHubs/namespaces/notificationHubs@2023-10-01-preview"
+#     parent_id                       = azapi_resource.notificationHubNameSpace.id
+#     name                            = local.notification_hub_name_contentaggregation
+#     location                        = var.location
+#     tags                            = var.tags  
+#     body = {
+#             properties = {
+#                 fcmV1Credential = {
+#                     properties = {
+#                         clientEmail = local.notification_hub_gcp_client_email
+#                         privateKey  = null
+#                         projectId   = local.notification_hub_gcp_project_id
+#                 }
+#             }
+#         }
+#     }
+#     schema_validation_enabled       = false
+#     response_export_values          = ["*"]
+# }
 
 # # ------------------------------------------------------------
 # # Module to create AVM Azure SQL Database
@@ -75,74 +80,4 @@ resource "azapi_resource" "notificationHub" {
 #       }
 # }
 
-
-
-
-
-# # ------------------------------------------------------------
-# # Azurerm - Notification Hub Namespace
-# # ------------------------------------------------------------
-# resource "azurerm_notification_hub_namespace" "hub-ns1" {
-#     name                            = local.notification_hub_ns_name_contentaggregation
-#     resource_group_name             = module.avm-res-resources-resourcegroup-content.name
-#     location                        = var.location
-#     tags                            = var.tags
-#     namespace_type                  = "NotificationHub"
-#     sku_name                        = "Free"
-# }
-
-# # ------------------------------------------------------------
-# # Azurerm - Notification Hub
-# # ------------------------------------------------------------
-# resource "azurerm_notification_hub" "hub1" {
-#     name                            = local.notification_hub_name_contentaggregation
-#     namespace_name                  = azurerm_notification_hub_namespace.hub-ns1.name
-#     resource_group_name             = module.avm-res-resources-resourcegroup-content.name
-#     location                        = var.location
-#     tags                            = var.tags    
-# }
-
-# resource "azapi_resource" "hub_fcm_v1" {
-#   type      = "Microsoft.NotificationHubs/namespaces/notificationHubs/fcmv1@2023-10-01-preview"
-#   name      = "fcmv1"
-#   parent_id = azurerm_notification_hub.hub1.id
-#   schema_validation_enabled = false
-
-#     body = {
-#     properties = {
-#       clientEmail = local.notification_hub_gcp_client_email
-#       privateKey  = local.notification_hub_gcp_private_key
-#       projectId   = local.notification_hub_gcp_project_id
-#     }
-#   }
-# }
-
-
-# # Apply Google FCM v1 Credentials
-# resource "azapi_resource" "hub_fcm_v1" {
-#   type                              = "Microsoft.NotificationHubs/namespaces/notificationHubs/fcmv1@2023-10-01-preview"
-#   parent_id                         = azurerm_notification_hub.hub1.id
-#   schema_validation_enabled         = false
-
-#     body = {
-#     properties = {
-#                         projectId   = local.notification_hub_gcp_project_id
-#                         privateKey  = local.notification_hub_gcp_private_key
-#                         clientEmail = local.notification_hub_gcp_client_email
-#     }
-#   }
-# }
-
-# # ------------------------------------------------------------
-# # Azurerm - Notification Hub Authorisation Rule
-# # --------------------------------------- ---------------------
-# # resource "azurerm_notification_hub_authorization_rule" "rule1" {
-# #     name                            = local.notification_hub_rule1_contentaggregation    
-# #     notification_hub_name           = azurerm_notification_hub.hub1.name
-# #     namespace_name                  = azurerm_notification_hub_namespace.hub-ns1.name
-# #     resource_group_name             = module.avm-res-resources-resourcegroup-content.name
-# #     manage                          = true
-# #     listen                          = true
-# #     send                            = true
-# # }
 
