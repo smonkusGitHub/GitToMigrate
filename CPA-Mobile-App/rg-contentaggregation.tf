@@ -39,7 +39,8 @@ resource "azapi_resource" "notificationHub" {
                 fcmV1Credential = {
                     properties = {
                         clientEmail = local.notification_hub_gcp_client_email
-                        privateKey  = local.notification_hub_gcp_private_key
+                        #privateKey  = local.notification_hub_gcp_private_key
+                        privateKey  = null
                         projectId   = local.notification_hub_gcp_project_id
                 }
             }
