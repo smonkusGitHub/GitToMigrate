@@ -37,7 +37,7 @@ module "avm-res-resources-resourcegroup-content" {
 
 resource "azapi_resource" "notificationHubNameSpace" {
   type                              = "Microsoft.NotificationHubs/namespaces@2023-10-01-preview"
-  parent_id                         = module.avm-res-resources-resourcegroup-content.name
+  parent_id                         = module.avm-res-resources-resourcegroup-content.resource_id
   name                              = local.notification_hub_ns_name_contentaggregation
   location                          = var.location
   tags                              = var.tags  
