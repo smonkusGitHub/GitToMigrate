@@ -12,48 +12,48 @@ module "avm-res-resources-resourcegroup-content" {
 # ------------------------------------------------------------
 # AzApi - Notification Hub Namespace
 # ------------------------------------------------------------
-# resource "azapi_resource" "notificationHubNameSpace" {
-#     type                            = "Microsoft.NotificationHubs/namespaces@2023-10-01-preview"
-#     parent_id                       = module.avm-res-resources-resourcegroup-content.resource_id
-#     name                            = local.notification_hub_ns_name_contentaggregation
-#     location                        = var.location
-#     tags                            = var.tags  
-#     body = {
-#             properties = {
-#                 enabled             = true
-#                 namespaceType       = "NotificationHub"      
-#             }
-#                 sku = {
-#                 name                = "Free"
-#             }
-#     }
-#     schema_validation_enabled       = false
-#     response_export_values          = ["*"]
-# }
+resource "azapi_resource" "notificationHubNameSpace" {
+    type                            = "Microsoft.NotificationHubs/namespaces@2023-10-01-preview"
+    parent_id                       = module.avm-res-resources-resourcegroup-content.resource_id
+    name                            = local.notification_hub_ns_name_contentaggregation
+    location                        = var.location
+    tags                            = var.tags  
+    body = {
+            properties = {
+                enabled             = true
+                namespaceType       = "NotificationHub"      
+            }
+                sku = {
+                name                = "Free"
+            }
+    }
+    schema_validation_enabled       = false
+    response_export_values          = ["*"]
+}
 
 # ------------------------------------------------------------
 # AzApi - Notification Hub
 # ------------------------------------------------------------
-# resource "azapi_resource" "notificationHub" {
-#     type                            = "Microsoft.NotificationHubs/namespaces/notificationHubs@2023-10-01-preview"
-#     parent_id                       = azapi_resource.notificationHubNameSpace.id
-#     name                            = local.notification_hub_name_contentaggregation
-#     location                        = var.location
-#     tags                            = var.tags  
-#     body = {
-#             properties = {
-#                 fcmV1Credential = {
-#                     properties = {
-#                         clientEmail = local.notification_hub_gcp_client_email
-#                         privateKey  = null
-#                         projectId   = local.notification_hub_gcp_project_id
-#                 }
-#             }
-#         }
-#     }
-#     schema_validation_enabled       = false
-#     response_export_values          = ["*"]
-# }
+resource "azapi_resource" "notificationHub" {
+    type                            = "Microsoft.NotificationHubs/namespaces/notificationHubs@2023-10-01-preview"
+    parent_id                       = azapi_resource.notificationHubNameSpace.id
+    name                            = local.notification_hub_name_contentaggregation
+    location                        = var.location
+    tags                            = var.tags  
+    body = {
+            properties = {
+                fcmV1Credential = {
+                    properties = {
+                        clientEmail = var.sit_notification_hub_gcp_client_email
+                        privateKey  = var.sit_notification_hub_gcp_private_key
+                        projectId   = var.sit_notification_hub_gcp_project_id
+                }
+            }
+        }
+    }
+    schema_validation_enabled       = false
+    response_export_values          = ["*"]
+}
 
 # # ------------------------------------------------------------
 # # Module to create AVM Azure SQL Database

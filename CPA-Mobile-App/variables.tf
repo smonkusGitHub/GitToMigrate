@@ -90,6 +90,22 @@ variable "sit_private_endpoint_subnet_id" {
   type        = string
 }
 
+variable "sit_notification_hub_gcp_private_key" {
+  description = "Notification Hub GCP Private Key"
+  type        = string
+  sensitive   = true    
+}
+
+variable "sit_notification_hub_gcp_project_id" {
+  description = "Notification Hub Project ID"
+  type        = string
+}
+
+variable "sit_notification_hub_gcp_client_email" {
+  description = "Notification Hub Client Email"
+  type        = string
+}
+
 # -------------------------------------------------
 # Local Variable
 # -------------------------------------------------
