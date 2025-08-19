@@ -5,11 +5,13 @@ trigger:
   paths:
     include:
       - CPA-Mobile-App/*
+
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   TF_VERSION: '1.7.5'
+  TERRAFORM_DIR: 'CPA-Mobile-App'
 
 steps:
   - checkout: self
@@ -21,110 +23,51 @@ steps:
       sudo mv terraform /usr/local/bin/
       terraform -version
     displayName: 'Install Terraform CLI'
-  
-  # - script: |
-  #     echo "checking Terraform format..."
-  #     files=$(terraform fmt -check -list=true -recursive)
-
-  #     if [ -n "$files" ]; then
-  #       echo "The following files needs formatting correctly:"
-  #       echo "$files"
-  #       echo "run 'terraform fmt - recursive locally' to format them."
-  #       exit 3
-  #     else
-  #       echo "All Terraform files are formatted correctly."
-  #     fi
-  #   displayName: 'Terraform Format Check with File List'
-  #   continueOnError: true
 
   - script: |
-      echo "Current path : $(pwd)"
-      echo "System.DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)"
-      echo "System.ArtifactsDirectory : $(System.ArtifactsDirectory)"
-      echo "Pipeline.Workspace : $(Pipeline.Workspace)"
-      find . -name '*.tf'
-    displayName: 'Looking for *.tf files in the current directory'
+      echo "Looking for *.tf files in: $(TERRAFORM_DIR)"
+      find "$(TERRAFORM_DIR)" -name '*.tf'
+    displayName: 'List .tf files in CPA-Mobile-App'
     continueOnError: true
 
   - script: |
-      echo "Pipeline.Workspace: $(Pipeline.Workspace)"
-      find "$(Pipeline.Workspace)" -name '*.tf' -exec echo "Found Terraform file: {}" \;
-    displayName: 'Find all Terraform files in the Pipeline Workspace'
-
-  - script: |
+      cd $(TERRAFORM_DIR)
       terraform init -backend=false
       terraform validate
-    displayName: 'Terraform Init & Validate (initialize the working directory and validate the configuration files)'
+    displayName: 'Terraform Init & Validate (only CPA-Mobile-App)'
     continueOnError: true
 
   - script: |
       curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+      cd $(TERRAFORM_DIR)
       tflint --init
       tflint
-    displayName: 'Run tflint (Terraform linter that focuses on finding bugs, style issues, and potential problems in your Terraform code)'
+    displayName: 'Run tflint (only CPA-Mobile-App)'
     continueOnError: true
 
   - script: |
       curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-      tfsec --exclude azure-database-enable-audit
-    displayName: 'Run tfsec (Scans your Terraform code and checks it against a large set of security best practices and compliance policies)'
+      tfsec $(TERRAFORM_DIR) --exclude azure-database-enable-audit
+    displayName: 'Run tfsec (only CPA-Mobile-App)'
     continueOnError: true
 
   - script: |
       pip install checkov
-      checkov -d $(Build.SourcesDirectory) --skip-check CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_132,CKV_AZURE_100,CKV_AZURE_140
-    displayName: 'Run Checkov (scans IaC files for misconfigurations, policy violations, and security risks)'
-    condition: true
+      checkov -d $(TERRAFORM_DIR) --skip-check CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_132,CKV_AZURE_100,CKV_AZURE_140
+    displayName: 'Run Checkov (only CPA-Mobile-App)'
     continueOnError: true
 
   - script: |
-      # echo "Fetching latest Terrascan release tag from GitHub..."
-      # TERRASCAN_LATEST_TAG=$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-      # echo "Latest tag: $TERRASCAN_LATEST_TAG"
-      # TERRASCAN_URL="https://github.com/tenable/terrascan/releases/download/${TERRASCAN_LATEST_TAG}/terrascan_linux_amd64"
-      # echo "Downloading Terrascan from $TERRASCAN_URL"
-      # curl -sSL -o terrascan "$TERRASCAN_URL"
-      # chmod +x terrascan
-      # sudo mv terrascan /usr/local/bin/
       curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
       tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
       sudo install terrascan /usr/local/bin && rm terrascan
-      echo "Terrascan version:"
-      terrascan version 
-    displayName: 'Download and Install Latest Terrascan'
+      terrascan version
+    displayName: 'Install Terrascan'
     continueOnError: false
 
   - script: |
-      if [ -f /usr/local/bin/terrascan ]; then
-        echo "Terrascan exists:"
-        ls -l /usr/local/bin/terrascan
-        file /usr/local/bin/terrascan
-        echo "Terrascan version:"
-        terrascan version        
-      else
-        echo "Terrascan does not exist in /usr/local/bin/"
-      fi      
-    displayName: 'Check Terrascan Installation'
-    continueOnError: false
-
-  - script: |
-      echo "Scanning all Terraform subdirectories under: $(System.DefaultWorkingDirectory)"
-      
-      # Define rules to skip (you can add or remove IDs as needed)
-      # "description": "Ensure there are no firewall rules allowing unrestricted access to Redis from other Azure sources",
-      # "rule_id": "AC_AZURE_0391",
-      # "description": "Anonymous, public read access to a container and its blobs can be enabled in Azure Blob storage. This is only recommended if absolutely necessary.",
-      # "rule_id": "AC_AZURE_0366",
-      SKIP_RULES="AC_AZURE_0391,AC_AZURE_0366"
-
-      # Find all unique directories that contain .tf files
-      find "$(System.DefaultWorkingDirectory)" -type f -name "*.tf" -exec dirname {} \; | sort -u | while read dir; do
-        echo "Scanning directory: $dir"
-        #/usr/local/bin/terrascan scan -t azure -i terraform -d "$dir" --skip-rules $SKIP_RULES || echo "Scan failed in $dir"
-        
-        # Below get the correct rule IDs by outputting the scan results in JSON format
-        #/usr/local/bin/terrascan scan -t azure -i terraform -d "$dir" -o json
-      done
-    displayName: 'Terrascan - Scan All Terraform subdirectories (with exemptions)'
-    condition: true
+      echo "Running Terrascan on $(TERRAFORM_DIR)"
+      terrascan scan -t azure -i terraform -d "$(System.DefaultWorkingDirectory)/$(TERRAFORM_DIR)" \
+        --skip-rules AC_AZURE_0391,AC_AZURE_0366
+    displayName: 'Terrascan - Scan only CPA-Mobile-App'
     continueOnError: false
