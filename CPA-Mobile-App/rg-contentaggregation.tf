@@ -24,7 +24,7 @@ resource "azapi_resource" "notificationHubNameSpace" {
                 namespaceType       = "NotificationHub"      
             }
                 sku = {
-                name                = "Basic"
+                name                = "Free"
             }
     }
     schema_validation_enabled       = false
