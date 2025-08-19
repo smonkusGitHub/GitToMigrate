@@ -2,9 +2,9 @@ trigger:
   branches:
     include:
       - main
-      - develop
-      - feature/*
-
+  paths:
+    include:
+      - CPA-Mobile-App/*
 pool:
   vmImage: 'ubuntu-latest'
 
