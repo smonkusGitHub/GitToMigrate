@@ -25,10 +25,22 @@ steps:
     displayName: 'Install Terraform CLI'
 
   - script: |
+      echo "Current path : $(pwd)"
+      echo "System.DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)"
+      echo "System.ArtifactsDirectory : $(System.ArtifactsDirectory)"
+      echo "Pipeline.Workspace : $(Pipeline.Workspace)"
+      echo "TERRAFORM_DIR : $(TERRAFORM_DIR)"
       echo "Looking for *.tf files in: $(TERRAFORM_DIR)"
       find "$(TERRAFORM_DIR)" -name '*.tf'
     displayName: 'List .tf files in CPA-Mobile-App'
     continueOnError: true
+
+  - script: |
+      echo "Pipeline.Workspace: $(Pipeline.Workspace)"
+      echo "TERRAFORM_DIR : $(TERRAFORM_DIR)"
+      find "$(Pipeline.Workspace)" -name '*.tf' -exec echo "Found Terraform file in workspace: {}" \;
+      find "$(TERRAFORM_DIR)" -name '*.tf' -exec echo "Found Terraform file in TERRAFORM_DIR: {}" \;
+    displayName: 'Find all Terraform files in the Pipeline TERRAFORM_DIR'
 
   - script: |
       cd $(TERRAFORM_DIR)
@@ -55,19 +67,41 @@ steps:
       pip install checkov
       checkov -d $(TERRAFORM_DIR) --skip-check CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_132,CKV_AZURE_100,CKV_AZURE_140
     displayName: 'Run Checkov (only CPA-Mobile-App)'
+    condition: true
     continueOnError: true
 
   - script: |
       curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
       tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
       sudo install terrascan /usr/local/bin && rm terrascan
+      echo "Terrascan version:"
       terrascan version
-    displayName: 'Install Terrascan'
+    displayName: 'Download and Install Latest Terrascan'
+    continueOnError: false
+
+  - script: |
+      if [ -f /usr/local/bin/terrascan ]; then
+        echo "Terrascan exists:"
+        ls -l /usr/local/bin/terrascan
+        file /usr/local/bin/terrascan
+        echo "Terrascan version:"
+        terrascan version        
+      else
+        echo "Terrascan does not exist in /usr/local/bin/"
+      fi      
+    displayName: 'Check Terrascan Installation'
     continueOnError: false
 
   - script: |
       echo "Running Terrascan on $(TERRAFORM_DIR)"
-      terrascan scan -t azure -i terraform -d "$(System.DefaultWorkingDirectory)/$(TERRAFORM_DIR)" \
-        --skip-rules AC_AZURE_0391,AC_AZURE_0366
+
+      # Define rules to skip (you can add or remove IDs as needed)
+      # "description": "Ensure there are no firewall rules allowing unrestricted access to Redis from other Azure sources",
+      # "rule_id": "AC_AZURE_0391",
+      # "description": "Anonymous, public read access to a container and its blobs can be enabled in Azure Blob storage. This is only recommended if absolutely necessary.",
+      # "rule_id": "AC_AZURE_0366",
+      SKIP_RULES="AC_AZURE_0391,AC_AZURE_0366"
+
+      terrascan scan -t azure -i terraform -d "$(System.DefaultWorkingDirectory)/$(TERRAFORM_DIR)" --skip-rules $SKIP_RULES
     displayName: 'Terrascan - Scan only CPA-Mobile-App'
     continueOnError: false
