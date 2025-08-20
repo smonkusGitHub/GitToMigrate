@@ -9,10 +9,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  TF_VERSION: '1.7.5'
-  TF_WORKING_DIR: 'CPA-Mobile-App'
-  # TF_WORKING_DIR: 'DevOps - CodeTest/CPA-Mobile-App's
-  echo "TF_WORKING_DIR: $(TF_WORKING_DIR)"
+  TF_VERSION: '1.12.2'
   
 steps:
   - checkout: self
@@ -38,11 +35,11 @@ steps:
   - script: |      
       echo "Pipeline.Workspace: $(Pipeline.Workspace)"
       find "$(Pipeline.Workspace)" -name '*.tf' -exec echo "Found Terraform file: {}" \;
-
     displayName: 'Find all Terraform files in the Pipeline Workspace'
 
   - script: |
-      workingDirectory: $(TF_WORKING_DIR)
+      echo "Setting up Terraform working directory..." : '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
+      workingDirectory: $(System.DefaultWorkingDirectory)/CPA-Mobile-App
       terraform init -backend=false # Init without backend (safe for validate)
       terraform validate            # Validate the Terraform configuration files      
       terraform plan -out=tfplan    # May need full init with backend
