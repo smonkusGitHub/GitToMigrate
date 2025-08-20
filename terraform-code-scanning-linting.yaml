@@ -10,7 +10,10 @@ pool:
 
 variables:
   TF_VERSION: '1.7.5'
-
+  TF_WORKING_DIR: 'CPA-Mobile-App'
+  # TF_WORKING_DIR: 'DevOps - CodeTest/CPA-Mobile-App's
+  echo "TF_WORKING_DIR: $(TF_WORKING_DIR)"
+  
 steps:
   - checkout: self
 
@@ -21,21 +24,7 @@ steps:
       sudo mv terraform /usr/local/bin/
       terraform -version
     displayName: 'Install Terraform CLI'
-  
-  # - script: |
-  #     echo "checking Terraform format..."
-  #     files=$(terraform fmt -check -list=true -recursive)
-
-  #     if [ -n "$files" ]; then
-  #       echo "The following files needs formatting correctly:"
-  #       echo "$files"
-  #       echo "run 'terraform fmt - recursive locally' to format them."
-  #       exit 3
-  #     else
-  #       echo "All Terraform files are formatted correctly."
-  #     fi
-  #   displayName: 'Terraform Format Check with File List'
-  #   continueOnError: true
+ 
 
   - script: |
       echo "Current path : $(pwd)"
@@ -46,14 +35,17 @@ steps:
     displayName: 'Looking for *.tf files in the current directory'
     continueOnError: true
 
-  - script: |
+  - script: |      
       echo "Pipeline.Workspace: $(Pipeline.Workspace)"
       find "$(Pipeline.Workspace)" -name '*.tf' -exec echo "Found Terraform file: {}" \;
+
     displayName: 'Find all Terraform files in the Pipeline Workspace'
 
   - script: |
-      terraform init -backend=false
-      terraform validate
+      workingDirectory: $(TF_WORKING_DIR)
+      terraform init -backend=false # Init without backend (safe for validate)
+      terraform validate            # Validate the Terraform configuration files      
+      terraform plan -out=tfplan    # May need full init with backend
     displayName: 'Terraform Init & Validate (initialize the working directory and validate the configuration files)'
     continueOnError: true
 
