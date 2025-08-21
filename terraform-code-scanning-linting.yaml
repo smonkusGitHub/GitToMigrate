@@ -37,13 +37,19 @@ steps:
       find "$(Pipeline.Workspace)" -name '*.tf' -exec echo "Found Terraform file: {}" \;
     displayName: 'Find all Terraform files in the Pipeline Workspace'
 
+  # - script: |
+  #     echo "Setting up Terraform working directory..." : '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'      
+  #     terraform init -backend=false # Init without backend (safe for validate)
+  #     terraform validate            # Validate the Terraform configuration files      
+  #     terraform plan -out=tfplan    # May need full init with backend
+  #   displayName: 'Terraform Init & Validate (initialize the working directory and validate the configuration files)'
+  #   workingDirectory: $(System.DefaultWorkingDirectory)/CPA-Mobile-App
+  #   continueOnError: true
+
   - script: |
-      echo "Setting up Terraform working directory..." : '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'      
-      terraform init -backend=false # Init without backend (safe for validate)
-      terraform validate            # Validate the Terraform configuration files      
-      terraform plan -out=tfplan    # May need full init with backend
+      terraform init -backend=false
+      terraform validate
     displayName: 'Terraform Init & Validate (initialize the working directory and validate the configuration files)'
-    workingDirectory: $(System.DefaultWorkingDirectory)/CPA-Mobile-App
     continueOnError: true
 
   - script: |
