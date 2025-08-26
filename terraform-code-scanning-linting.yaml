@@ -40,7 +40,7 @@ steps:
   - script: |
       terraform init -backend=false
       terraform validate
-    displayName: 'Terraform Init & Validate (initialize the working directory and validate the configuration files)'
+    displayName: 'Terraform Init & Validate (CPA-Mobile-App)'
     workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
     continueOnError: true
 
