@@ -44,11 +44,22 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
     continueOnError: true
 
+  # - script: |
+  #     curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+  #     tflint --init
+  #     tflint
+  #   displayName: 'Run tflint (Terraform linter that focuses on finding bugs, style issues, and potential problems in your Terraform code)'
+  #   workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
+  #   continueOnError: true
+
   - script: |
       curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-      tflint --init
-      tflint
-    displayName: 'Run tflint (Terraform linter that focuses on finding bugs, style issues, and potential problems in your Terraform code)'
+      set -e
+      for dir in $(find . -type f -name "*.tf" -exec dirname {} \; | sort -u); do
+        echo "🔍 Running TFLint in $dir"
+        (cd "$dir" && tflint --init && tflint)
+      done
+    displayName: 'Run TFLint (Terraform linter that focuses on finding bugs, style issues, and potential problems in your Terraform code)'
     workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
     continueOnError: true
 
