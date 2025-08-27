@@ -340,22 +340,22 @@ module "avm-res-resources-resourcegroup-shared" {
 #     subresource_names               = ["topic"]
 # }
 
-# # -------------------------------------------------
-# # Module to create AVM Azure Service Bus
-# # -------------------------------------------------
-# module "avm-res-servicebus-namespace-shared" {
-#   source                            = "Azure/avm-res-servicebus-namespace/azurerm"
-#   version                           = "0.4.0"
-#   name                              = local.servicebus_namespace_name_shared
-#   location                          = var.location
-#   tags                              = var.tags
-#   resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
-#   authorization_rules               = var.authorization_rules_shared_course
-#   sku                               = local.servicebus_sku
-#   capacity                          = local.servicebus_capacity
-#   premium_messaging_partitions      = local.servicebus_premium_messaging_partitions
-#   public_network_access_enabled     = false
-# }
+# -------------------------------------------------
+# Module to create AVM Azure Service Bus
+# -------------------------------------------------
+module "avm-res-servicebus-namespace-shared" {
+  source                            = "Azure/avm-res-servicebus-namespace/azurerm"
+  version                           = "0.4.0"
+  name                              = local.servicebus_namespace_name_shared
+  location                          = var.location
+  tags                              = var.tags
+  resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
+  authorization_rules               = var.authorization_rules_shared_course
+  sku                               = local.servicebus_sku
+  capacity                          = local.servicebus_capacity
+  premium_messaging_partitions      = local.servicebus_premium_messaging_partitions
+  public_network_access_enabled     = false
+}
 
 # # ------------------------------------------------------------
 # # Azurerm - Service Bus Topic

@@ -263,7 +263,7 @@ locals {
   # Course
   # - eventgrid-system-topic-sub-course
 
-  servicebus_sku                                      = "Premium"
+  servicebus_sku                                      = "Basic"
   servicebus_capacity                                 = 1
   servicebus_premium_messaging_partitions             = 1
 
