@@ -62,8 +62,6 @@ rule "azurerm_application_insights_application_type" { enabled = true }
 # -----------------------------
 # General Best Practices
 # -----------------------------
-#rule "terraform_unused_declarations" { enabled = true }
 rule "terraform_required_version" { enabled = true }
-
 # Disable unused declarations globally
 rule "terraform_unused_declarations" { enabled = false }
