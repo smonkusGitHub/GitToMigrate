@@ -63,5 +63,35 @@ rule "azurerm_application_insights_application_type" { enabled = true }
 # General Best Practices
 # -----------------------------
 rule "terraform_required_version" { enabled = true }
-# Disable unused declarations globally
-rule "terraform_unused_declarations" { enabled = false }
+rule "terraform_unused_declarations" { enabled = true }
+
+# -----------------------------
+# Ignore specific unused locals
+# -----------------------------
+ignore "terraform_unused_declarations" {
+  name = "local.sql_database_name_bookmark"
+}
+ignore "terraform_unused_declarations" {
+  name = "local.sql_database_name_contentaggregation"
+}
+ignore "terraform_unused_declarations" {
+  name = "local.notification_hub_rule1_contentaggregation"
+}
+ignore "terraform_unused_declarations" {
+  name = "local.private_service_connection_st_name_course_table"
+}
+ignore "terraform_unused_declarations" {
+  name = "local.storage_name_podcast"
+}
+ignore "terraform_unused_declarations" {
+  name = "local.storage_queue_name_podcast"
+}
+ignore "terraform_unused_declarations" {
+  name = "local.storage_table_name_podcast"
+}
+ignore "terraform_unused_declarations" {
+  name = "local.private_endpoint_st_name_podcast"
+}
+ignore "terraform_unused_declarations" {
+  name = "local.private_network_interface_st_name_podcast"
+}
