@@ -10,9 +10,9 @@ module "avm-res-resources-resourcegroup-podcast" {
 }
 
 # Set up endpoints locally, it didn't work on the locals.tf
-locals {
-  endpoints                           = toset(["blob", "queue", "table"])
-}
+# locals {
+#   endpoints                           = toset(["blob", "queue", "table"])
+# }
 
 # # -------------------------------------------------
 # # Module to create AVM Azure Storage account

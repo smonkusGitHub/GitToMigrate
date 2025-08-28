@@ -4,7 +4,7 @@ locals {
   # -------------------------------------------------
   resource_group_name_bookmark                        = "rg-${var.location_short_name}-${var.environment_short_name}-${var.project_long_name}-bookmark-01"
   # SQL
-  sql_database_name_bookmark                          = "sqldb-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-bookmark"
+  #sql_database_name_bookmark                          = "sqldb-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-bookmark"
 
   # -------------------------------------------------
   # Content Aggregation
@@ -15,7 +15,7 @@ locals {
   # Notification Hub
   notification_hub_ns_name_contentaggregation         = "notification-hub-ns-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
   notification_hub_name_contentaggregation            = "notification-hub-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
-  notification_hub_rule1_contentaggregation           = "notification-hub-rule1-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
+  #notification_hub_rule1_contentaggregation           = "notification-hub-rule1-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
     
   # -------------------------------------------------
   # Course
@@ -91,9 +91,9 @@ locals {
   # -------------------------------------------------
   resource_group_name_shared                          = "rg-${var.location_short_name}-${var.environment_short_name}-${var.project_long_name}-shared-01"
   # Tagging with current date
-  tags = merge(var.tags, {
-    CreatedDate = formatdate("DD-MM-YYYY", plantimestamp())
-  })
+  # tags = merge(var.tags, {
+  #   CreatedDate = formatdate("DD-MM-YYYY", plantimestamp())
+  # })
 
   # # Storage Logic it will loop through all the type and build private end point for each item.
   # storageendpoints                                    = toset(["blob", "queue", "table"])
