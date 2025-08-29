@@ -4,7 +4,7 @@
 
 plugin "azurerm" {
   enabled = true
-  version = "0.29.0"  # Use the latest version from GitHub releases
+  version = ">= 0.29.0" # Use the latest version from GitHub releases
   source  = "github.com/terraform-linters/tflint-ruleset-azurerm"
 }
 
