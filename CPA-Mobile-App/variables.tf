@@ -85,10 +85,10 @@ variable "client_secret" {
 #   sensitive   = true    
 # }
 
-# variable "sit_private_endpoint_subnet_id" {
-#   description = "Specifies the private endpoint subnet id"
-#   type        = string
-# }
+variable "sit_private_endpoint_subnet_id" {
+  description = "Specifies the private endpoint subnet id"
+  type        = string
+}
 
 variable "sit_notification_hub_gcp_private_key" {
   description = "Notification Hub GCP Private Key"
@@ -104,7 +104,7 @@ variable "sit_notification_hub_gcp_project_id" {
 variable "sit_notification_hub_gcp_client_email" {
   description = "Notification Hub Client Email"
   type        = string
- }
+}
 
 # -------------------------------------------------
 # Local Variable

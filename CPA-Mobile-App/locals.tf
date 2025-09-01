@@ -267,6 +267,21 @@ locals {
   servicebus_capacity                                 = 1
   servicebus_premium_messaging_partitions             = 1
 
-
+  # -------------------------------------------------
+  # App Configuration
+  # -------------------------------------------------
+  appconfig_name_shared                               = "appcs-${var.environment_short_name}-${var.location_short_name}-01-shared"
+  appconfig_sku_name_shared                           = "standard"
+  appconfig_local_auth_enabled_shared                 = false
+  appconfig_public_network_access_shared              = "Disabled"
+  appconfig_purge_protection_enabled_shared           = true
+  appconfig_soft_delete_retention_days_shared         = 7
+    
+  # Private Endpoints - App Configuration  
+  private_endpoint_appconfig_name_shared              = "pe-appcs-${var.environment_short_name}-${var.location_short_name}-01-shared"
+  private_network_interface_appconfig_name_shared     = "nic-appcs-${var.environment_short_name}-${var.location_short_name}-01-shared"
+  private_dns_zone_group_appconfig_name_shared        = "privatelink.azconfig.io"
+  private_dns_zone_resource_appconfig_id_shared       = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.azconfig.io"
+  private_service_connection_appconfig_name_shared    = "psc-appcs-${var.environment_short_name}-${var.location_short_name}-01-shared"
 
 }

@@ -726,3 +726,37 @@ module "avm-res-servicebus-namespace-shared" {
 #     private_service_connection_name = local.private_service_connection_cosmodb_sql_name_shared
 #     subresource_names               = ["Sql"]
 # }
+
+# ------------------------------------------------------------
+# Azurerm - Manages an Azure App Configuration.
+# ------------------------------------------------------------
+resource "azurerm_app_configuration" "appconfig_shared" {
+  name                              = local.appconfig_name_shared
+  resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
+  location                          = azurerm_resource_group.example.location
+  tags                              = var.tags
+  sku                               = local.appconfig_sku_name_shared
+  local_auth_enabled                = local.appconfig_local_auth_enabled_shared
+  public_network_access             = local.appconfig_public_network_access_shared
+  purge_protection_enabled          = local.appconfig_purge_protection_enabled_shared
+  soft_delete_retention_days        = local.appconfig_soft_delete_retention_days_shared  
+}
+
+# -------------------------------------------------
+# AVM - Private Endpoint (App Configuration)
+# -------------------------------------------------
+module "avm-res-network-privateendpoint-appconfig-shared" {
+    source                          = "Azure/avm-res-network-privateendpoint/azurerm"
+    version                         = "0.2.0"
+    name                            = local.private_endpoint_appconfig_name_shared
+    location                        = var.location
+    tags                            = var.tags
+    network_interface_name          = local.private_network_interface_appconfig_name_shared
+    private_connection_resource_id  = azurerm_app_configuration.appconfig_shared.id
+    resource_group_name             = module.avm-res-resources-resourcegroup-shared.name  
+    subnet_resource_id              = var.sit_private_endpoint_subnet_id
+    private_dns_zone_group_name     = local.private_dns_zone_group_appconfig_name_shared
+    private_dns_zone_resource_ids   = [local.private_dns_zone_resource_appconfig_id_shared]
+    private_service_connection_name = local.private_service_connection_appconfig_name_shared
+    subresource_names               = ["configurationStores"]
+}
