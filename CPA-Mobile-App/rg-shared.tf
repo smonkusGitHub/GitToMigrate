@@ -735,11 +735,16 @@ resource "azurerm_app_configuration" "appconfig_shared" {
   resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
   location                          = var.location
   tags                              = var.tags
-  sku                               = local.appconfig_sku_name_shared
-  local_auth_enabled                = local.appconfig_local_auth_enabled_shared
-  public_network_access             = local.appconfig_public_network_access_shared
-  purge_protection_enabled          = local.appconfig_purge_protection_enabled_shared
+  sku                               = "standard"
+  local_auth_enabled                = false
+  public_network_access             = false
+  purge_protection_enabled          = true
   soft_delete_retention_days        = local.appconfig_soft_delete_retention_days_shared  
+  # Explicit encryption block
+  encryption {
+    key_vault_key_identifier        = null   # Microsoft-managed key (default)
+    identity_client_id              = null
+  }
 }
 
 # -------------------------------------------------
