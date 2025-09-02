@@ -727,6 +727,20 @@ module "avm-res-servicebus-namespace-shared" {
 #     subresource_names               = ["Sql"]
 # }
 
+resource "azurerm_user_assigned_identity" "appconfig" {
+  name                = "uai-appconfig"
+  resource_group_name = module.avm-res-resources-resourcegroup-shared.name
+  location            = var.location
+}
+
+resource "azurerm_key_vault_key" "cmk" {
+  name         = "appconfig-cmk"
+  key_vault_id = azurerm_key_vault.example.id
+  key_type     = "RSA"
+  key_size     = 2048
+  key_opts     = ["decrypt", "encrypt", "sign", "verify", "wrapKey", "unwrapKey"]
+}
+
 # ------------------------------------------------------------
 # Azurerm - Manages an Azure App Configuration.
 # ------------------------------------------------------------
@@ -737,13 +751,18 @@ resource "azurerm_app_configuration" "appconfig_shared" {
   tags                              = var.tags
   sku                               = "standard"
   local_auth_enabled                = false
-  public_network_access             = "Enabled"
+  public_network_access             = "Disabled"
   purge_protection_enabled          = true
   soft_delete_retention_days        = 7
-  # Explicit encryption block
+  
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.appconfig.id]
+  }
+
   encryption {
-    key_vault_key_identifier        = null   # Microsoft-managed key (default)
-    identity_client_id              = null
+    key_vault_key_identifier = azurerm_key_vault_key.cmk.id
+    identity_client_id       = azurerm_user_assigned_identity.appconfig.client_id
   }
 }
 
