@@ -733,7 +733,7 @@ module "avm-res-servicebus-namespace-shared" {
 resource "azurerm_app_configuration" "appconfig_shared" {
   name                              = local.appconfig_name_shared
   resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
-  location                          = azurerm_resource_group.example.location
+  location                          = var.location
   tags                              = var.tags
   sku                               = local.appconfig_sku_name_shared
   local_auth_enabled                = local.appconfig_local_auth_enabled_shared
