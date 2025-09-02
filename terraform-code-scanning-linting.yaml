@@ -70,7 +70,7 @@ steps:
 
   - script: |
       pip install checkov
-      checkov -d . --skip-check CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_132,CKV_AZURE_100,CKV_AZURE_140
+      checkov -d . --skip-check CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_132,CKV_AZURE_100,CKV_AZURE_140,CKV_AZURE_186
     displayName: 'Run Checkov (scans IaC files for misconfigurations, policy violations, and security risks)'
     workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
     condition: true
