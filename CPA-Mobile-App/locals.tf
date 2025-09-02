@@ -271,11 +271,11 @@ locals {
   # App Configuration
   # -------------------------------------------------
   appconfig_name_shared                               = "appcs-${var.environment_short_name}-${var.location_short_name}-01-shared"
-  appconfig_sku_name_shared                           = "standard"
-  appconfig_local_auth_enabled_shared                 = false
-  appconfig_public_network_access_shared              = "Disabled"
-  appconfig_purge_protection_enabled_shared           = true
-  appconfig_soft_delete_retention_days_shared         = 7
+  # appconfig_sku_name_shared                           = "standard"
+  # appconfig_local_auth_enabled_shared                 = false
+  # appconfig_public_network_access_shared              = "Disabled"
+  # appconfig_purge_protection_enabled_shared           = true
+  # appconfig_soft_delete_retention_days_shared         = 7
     
   # Private Endpoints - App Configuration  
   private_endpoint_appconfig_name_shared              = "pe-appcs-${var.environment_short_name}-${var.location_short_name}-01-shared"

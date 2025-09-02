@@ -737,9 +737,9 @@ resource "azurerm_app_configuration" "appconfig_shared" {
   tags                              = var.tags
   sku                               = "standard"
   local_auth_enabled                = false
-  public_network_access             = false
+  public_network_access             = "Enabled"
   purge_protection_enabled          = true
-  soft_delete_retention_days        = local.appconfig_soft_delete_retention_days_shared  
+  soft_delete_retention_days        = 7
   # Explicit encryption block
   encryption {
     key_vault_key_identifier        = null   # Microsoft-managed key (default)
