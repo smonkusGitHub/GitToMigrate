@@ -164,11 +164,11 @@ locals {
   # servicebus_subscription_rule_name_shared_course     = "test-create-course-subscription-rule"  
   # servicebus_queue_name_shared_queue                  = "sbq-${var.environment_short_name}-${var.location_short_name}-deltachanges-podcast-01-shared"
   # # Private Endpoints - Service Bus  
-  # private_endpoint_sb_name_shared_course              = "pe-sb-${var.environment_short_name}-${var.location_short_name}-01-shared-course"
-  # private_network_interface_sb_name_shared_course     = "nic-pe-sb-${var.environment_short_name}-${var.location_short_name}-01-shared-course"
-  # private_dns_zone_group_sb_name_shared_course        = "privatelink.servicebus.windows.net"
-  # private_dns_zone_resource_sb_id_shared_course       = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.servicebus.windows.net"
-  # private_service_connection_sb_name_shared_course    = "psc-sb-${var.environment_short_name}-${var.location_short_name}-01-shared-course"
+  private_endpoint_sb_name_shared_course              = "pe-sb-${var.environment_short_name}-${var.location_short_name}-01-shared-course"
+  private_network_interface_sb_name_shared_course     = "nic-pe-sb-${var.environment_short_name}-${var.location_short_name}-01-shared-course"
+  private_dns_zone_group_sb_name_shared_course        = "privatelink.servicebus.windows.net"
+  private_dns_zone_resource_sb_id_shared_course       = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.servicebus.windows.net"
+  private_service_connection_sb_name_shared_course    = "psc-sb-${var.environment_short_name}-${var.location_short_name}-01-shared-course"
 
   # # SQL Server for all databases
   # sql_server_name_shared                              = "sql-${var.location_short_name}-${var.environment_short_name}-${var.project_long_name}-shared-01"

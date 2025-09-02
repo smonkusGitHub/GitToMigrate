@@ -405,24 +405,24 @@ module "avm-res-servicebus-namespace-shared" {
 #   sql_filter                        = "1=1"
 # }
 
-# # ------------------------------------------------------------
-# # Azurerm - Private Endpoint (Service Bus)
-# # --------------------------------------- ---------------------
-# module "avm-res-network-privateendpoint-sb-course" {
-#     source                          = "Azure/avm-res-network-privateendpoint/azurerm"
-#     version                         = "0.2.0"
-#     name                            = local.private_endpoint_sb_name_shared_course
-#     location                        = var.location
-#     tags                            = var.tags
-#     network_interface_name          = local.private_network_interface_sb_name_shared_course
-#     private_connection_resource_id  = module.avm-res-servicebus-namespace-shared.resource_id
-#     resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
-#     subnet_resource_id              = var.sit_private_endpoint_subnet_id
-#     private_dns_zone_group_name     = local.private_dns_zone_group_sb_name_shared_course
-#     private_dns_zone_resource_ids   = [local.private_dns_zone_resource_sb_id_shared_course]
-#     private_service_connection_name = local.private_service_connection_sb_name_shared_course
-#     subresource_names               = ["namespace"]
-# }
+# ------------------------------------------------------------
+# Azurerm - Private Endpoint (Service Bus)
+# --------------------------------------- ---------------------
+module "avm-res-network-privateendpoint-sb-course" {
+    source                          = "Azure/avm-res-network-privateendpoint/azurerm"
+    version                         = "0.2.0"
+    name                            = local.private_endpoint_sb_name_shared_course
+    location                        = var.location
+    tags                            = var.tags
+    network_interface_name          = local.private_network_interface_sb_name_shared_course
+    private_connection_resource_id  = module.avm-res-servicebus-namespace-shared.resource_id
+    resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
+    subnet_resource_id              = var.sit_private_endpoint_subnet_id
+    private_dns_zone_group_name     = local.private_dns_zone_group_sb_name_shared_course
+    private_dns_zone_resource_ids   = [local.private_dns_zone_resource_sb_id_shared_course]
+    private_service_connection_name = local.private_service_connection_sb_name_shared_course
+    subresource_names               = ["namespace"]
+}
 
 # # ------------------------------------------------------------
 # # Module to create AVM Azure SQL Server
