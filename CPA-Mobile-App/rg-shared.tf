@@ -340,22 +340,22 @@ module "avm-res-resources-resourcegroup-shared" {
 #     subresource_names               = ["topic"]
 # }
 
-# -------------------------------------------------
-# Module to create AVM Azure Service Bus
-# -------------------------------------------------
-module "avm-res-servicebus-namespace-shared" {
-  source                            = "Azure/avm-res-servicebus-namespace/azurerm"
-  version                           = "0.4.0"
-  name                              = local.servicebus_namespace_name_shared
-  location                          = var.location
-  tags                              = var.tags
-  resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
-  authorization_rules               = var.authorization_rules_shared_course
-  sku                               = local.servicebus_sku
-  capacity                          = local.servicebus_capacity
-  premium_messaging_partitions      = local.servicebus_premium_messaging_partitions
-  public_network_access_enabled     = false
-}
+# # -------------------------------------------------
+# # Module to create AVM Azure Service Bus
+# # -------------------------------------------------
+# module "avm-res-servicebus-namespace-shared" {
+#   source                            = "Azure/avm-res-servicebus-namespace/azurerm"
+#   version                           = "0.4.0"
+#   name                              = local.servicebus_namespace_name_shared
+#   location                          = var.location
+#   tags                              = var.tags
+#   resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
+#   authorization_rules               = var.authorization_rules_shared_course
+#   sku                               = local.servicebus_sku
+#   capacity                          = local.servicebus_capacity
+#   premium_messaging_partitions      = local.servicebus_premium_messaging_partitions
+#   public_network_access_enabled     = false
+# }
 
 # # ------------------------------------------------------------
 # # Azurerm - Service Bus Topic
@@ -405,24 +405,24 @@ module "avm-res-servicebus-namespace-shared" {
 #   sql_filter                        = "1=1"
 # }
 
-# ------------------------------------------------------------
-# Azurerm - Private Endpoint (Service Bus)
-# --------------------------------------- ---------------------
-module "avm-res-network-privateendpoint-sb-course" {
-    source                          = "Azure/avm-res-network-privateendpoint/azurerm"
-    version                         = "0.2.0"
-    name                            = local.private_endpoint_sb_name_shared_course
-    location                        = var.location
-    tags                            = var.tags
-    network_interface_name          = local.private_network_interface_sb_name_shared_course
-    private_connection_resource_id  = module.avm-res-servicebus-namespace-shared.resource_id
-    resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
-    subnet_resource_id              = var.sit_private_endpoint_subnet_id
-    private_dns_zone_group_name     = local.private_dns_zone_group_sb_name_shared_course
-    private_dns_zone_resource_ids   = [local.private_dns_zone_resource_sb_id_shared_course]
-    private_service_connection_name = local.private_service_connection_sb_name_shared_course
-    subresource_names               = ["namespace"]
-}
+# # ------------------------------------------------------------
+# # Azurerm - Private Endpoint (Service Bus)
+# # --------------------------------------- ---------------------
+# module "avm-res-network-privateendpoint-sb-course" {
+#     source                          = "Azure/avm-res-network-privateendpoint/azurerm"
+#     version                         = "0.2.0"
+#     name                            = local.private_endpoint_sb_name_shared_course
+#     location                        = var.location
+#     tags                            = var.tags
+#     network_interface_name          = local.private_network_interface_sb_name_shared_course
+#     private_connection_resource_id  = module.avm-res-servicebus-namespace-shared.resource_id
+#     resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
+#     subnet_resource_id              = var.sit_private_endpoint_subnet_id
+#     private_dns_zone_group_name     = local.private_dns_zone_group_sb_name_shared_course
+#     private_dns_zone_resource_ids   = [local.private_dns_zone_resource_sb_id_shared_course]
+#     private_service_connection_name = local.private_service_connection_sb_name_shared_course
+#     subresource_names               = ["namespace"]
+# }
 
 # # ------------------------------------------------------------
 # # Module to create AVM Azure SQL Server
@@ -728,36 +728,36 @@ module "avm-res-network-privateendpoint-sb-course" {
 # }
 
 
-# ------------------------------------------------------------
-# Azurerm - Manages an Azure App Configuration.
-# ------------------------------------------------------------
-resource "azurerm_app_configuration" "appconfig_shared" {
-  name                              = local.appconfig_name_shared
-  resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
-  location                          = var.location
-  tags                              = var.tags
-  sku                               = "standard"
-  local_auth_enabled                = false
-  public_network_access             = "Disabled"
-  purge_protection_enabled          = true
-  soft_delete_retention_days        = 7  
-}
+# # ------------------------------------------------------------
+# # Azurerm - Manages an Azure App Configuration.
+# # ------------------------------------------------------------
+# resource "azurerm_app_configuration" "appconfig_shared" {
+#   name                              = local.appconfig_name_shared
+#   resource_group_name               = module.avm-res-resources-resourcegroup-shared.name
+#   location                          = var.location
+#   tags                              = var.tags
+#   sku                               = "standard"
+#   local_auth_enabled                = false
+#   public_network_access             = "Disabled"
+#   purge_protection_enabled          = true
+#   soft_delete_retention_days        = 7  
+# }
 
-# -------------------------------------------------
-# AVM - Private Endpoint (App Configuration)
-# -------------------------------------------------
-module "avm-res-network-privateendpoint-appconfig-shared" {
-    source                          = "Azure/avm-res-network-privateendpoint/azurerm"
-    version                         = "0.2.0"
-    name                            = local.private_endpoint_appconfig_name_shared
-    location                        = var.location
-    tags                            = var.tags
-    network_interface_name          = local.private_network_interface_appconfig_name_shared
-    private_connection_resource_id  = azurerm_app_configuration.appconfig_shared.id
-    resource_group_name             = module.avm-res-resources-resourcegroup-shared.name  
-    subnet_resource_id              = var.sit_private_endpoint_subnet_id
-    private_dns_zone_group_name     = local.private_dns_zone_group_appconfig_name_shared
-    private_dns_zone_resource_ids   = [local.private_dns_zone_resource_appconfig_id_shared]
-    private_service_connection_name = local.private_service_connection_appconfig_name_shared
-    subresource_names               = ["configurationStores"]
-}
+# # -------------------------------------------------
+# # AVM - Private Endpoint (App Configuration)
+# # -------------------------------------------------
+# module "avm-res-network-privateendpoint-appconfig-shared" {
+#     source                          = "Azure/avm-res-network-privateendpoint/azurerm"
+#     version                         = "0.2.0"
+#     name                            = local.private_endpoint_appconfig_name_shared
+#     location                        = var.location
+#     tags                            = var.tags
+#     network_interface_name          = local.private_network_interface_appconfig_name_shared
+#     private_connection_resource_id  = azurerm_app_configuration.appconfig_shared.id
+#     resource_group_name             = module.avm-res-resources-resourcegroup-shared.name  
+#     subnet_resource_id              = var.sit_private_endpoint_subnet_id
+#     private_dns_zone_group_name     = local.private_dns_zone_group_appconfig_name_shared
+#     private_dns_zone_resource_ids   = [local.private_dns_zone_resource_appconfig_id_shared]
+#     private_service_connection_name = local.private_service_connection_appconfig_name_shared
+#     subresource_names               = ["configurationStores"]
+# }
