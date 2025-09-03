@@ -65,12 +65,12 @@ module "avm-res-sql-server-database-contentaggregation" {
     tags                            = var.tags
     sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }    
     sku_name                        = local.sql_database_sku_name
-    auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
+    auto_pause_delay_in_minutes     = 60
     collation                       = local.sql_database_collation
     create_mode                     = local.sql_database_create_mode
     ledger_enabled                  = false    
     max_size_gb                     = local.sql_database_max_size_gb
-    min_capacity                    = local.sql_database_min_capacity
+    min_capacity                    = 0.5
     read_replica_count              = local.sql_database_read_replica_count
     read_scale                      = false
     zone_redundant                  = false    
