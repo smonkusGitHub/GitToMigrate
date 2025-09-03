@@ -171,7 +171,7 @@ locals {
   private_service_connection_sb_name_shared_course    = "psc-sb-${var.environment_short_name}-${var.location_short_name}-01-shared-course"
 
   # # SQL Server for all databases
-  # sql_server_name_shared                              = "sql-${var.location_short_name}-${var.environment_short_name}-${var.project_long_name}-shared-01"
+  sql_server_name_shared                              = "sql-${var.location_short_name}-${var.environment_short_name}-${var.project_long_name}-shared-01"
 
   # # Private Endpoints - SQL
   # private_endpoint_sql_name_shared                    = "pe-sql-${var.environment_short_name}-${var.location_short_name}-01-shared"
@@ -228,19 +228,19 @@ locals {
   # # -------------------------------------------------
   # # SQL Server and Database
   # # -------------------------------------------------
-  # sql_server_azuread_administrator_name               = "sqlaccess-sql-ae-tst-mobileapp-admins"
-  # sql_server_azuread_administrator_id                 = "d5623571-f297-4a07-853d-e707a8bb89a3"
+  sql_server_azuread_administrator_name               = "sqlaccess-sql-ae-tst-mobileapp-admins"
+  sql_server_azuread_administrator_id                 = "d5623571-f297-4a07-853d-e707a8bb89a3"
 
-  # sql_database_sku_name                               = "GP_S_Gen5_2"
-  # sql_database_auto_pause_delay_in_minutes            = -1
-  # sql_database_auto_pause_delay_in_minutes3            = -1
-  # sql_database_collation                              = "SQL_Latin1_General_CP1_CI_AS"
-  # sql_database_create_mode                            = "Default"
-  # sql_database_max_size_gb                            = 32
-  # sql_database_min_capacity                           = 0.5
-  # sql_database_read_replica_count                     = 0
-  # sql_database_retention_days                         = 7
-  # sql_database_backup_interval_in_hours               = 12
+  sql_database_sku_name                               = "GP_S_Gen5_2"
+  sql_database_auto_pause_delay_in_minutes            = -1
+  sql_database_auto_pause_delay_in_minutes3            = -1
+  sql_database_collation                              = "SQL_Latin1_General_CP1_CI_AS"
+  sql_database_create_mode                            = "Default"
+  sql_database_max_size_gb                            = 32
+  sql_database_min_capacity                           = 0.5
+  sql_database_read_replica_count                     = 0
+  sql_database_retention_days                         = 7
+  sql_database_backup_interval_in_hours               = 12
   
   # # -------------------------------------------------
   # # Storage Account

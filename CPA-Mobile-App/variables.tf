@@ -73,17 +73,17 @@ variable "client_secret" {
   sensitive   = true
 }
 
-# variable "sit_sql_admin_login" {
-#   description = "SQL Admin Login"
-#   type        = string
-#   sensitive   = false
-# }
+variable "sit_sql_admin_login" {
+  description = "SQL Admin Login"
+  type        = string
+  sensitive   = false
+}
 
-# variable "sit_sql_admin_password" {
-#   description = "SQL Admin Password"
-#   type        = string
-#   sensitive   = true    
-# }
+variable "sit_sql_admin_password" {
+  description = "SQL Admin Password"
+  type        = string
+  sensitive   = true    
+}
 
 variable "sit_private_endpoint_subnet_id" {
   description = "Specifies the private endpoint subnet id"
