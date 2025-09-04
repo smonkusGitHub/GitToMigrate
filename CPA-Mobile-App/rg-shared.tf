@@ -427,23 +427,24 @@ module "avm-res-resources-resourcegroup-shared" {
 # ------------------------------------------------------------
 # Module to create AVM Azure SQL Server
 # ------------------------------------------------------------
-module "avm-res-sql-server-shared" {
-    source                          = "Azure/avm-res-sql-server/azurerm"
-    server_version                  = "12.0"    
-    resource_group_name             = module.avm-res-resources-resourcegroup-shared.name      
-    name                            = local.sql_server_name_shared
-    location                        = var.location
-    tags                            = var.tags
-    connection_policy               = "Proxy"
-    public_network_access_enabled   = false    
-    administrator_login             = var.sit_sql_admin_login
-    administrator_login_password    = var.sit_sql_admin_password 
-    azuread_administrator           = {
-        login_username              = local.sql_server_azuread_administrator_name
-        object_id                   = local.sql_server_azuread_administrator_id
-  }
-  express_vulnerability_assessment_enabled = true
-}
+# module "avm-res-sql-server-shared" {
+#     source                          = "Azure/avm-res-sql-server/azurerm"
+#     version                         = "0.1.5"
+#     server_version                  = "12.0"    
+#     resource_group_name             = module.avm-res-resources-resourcegroup-shared.name      
+#     name                            = local.sql_server_name_shared
+#     location                        = var.location
+#     tags                            = var.tags
+#     connection_policy               = "Proxy"
+#     public_network_access_enabled   = false    
+#     administrator_login             = var.sit_sql_admin_login
+#     administrator_login_password    = var.sit_sql_admin_password 
+#     azuread_administrator           = {
+#         login_username              = local.sql_server_azuread_administrator_name
+#         object_id                   = local.sql_server_azuread_administrator_id
+#   }
+#   express_vulnerability_assessment_enabled = true
+# }
 
 # # ------------------------------------------------------------
 # # Azurerm - Private Endpoint (SQL Server)
