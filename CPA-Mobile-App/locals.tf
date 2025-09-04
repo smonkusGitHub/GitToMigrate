@@ -12,6 +12,9 @@ locals {
   resource_group_name_contentaggregation              = "rg-${var.location_short_name}-${var.environment_short_name}-${var.project_long_name}-contentaggregation-01"
   # SQL
   sql_database_name_contentaggregation                = "sqldb-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
+  sql_job_agent_name_contentaggregation               = "sqldb-job-agent-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
+
+
   # Notification Hub
   notification_hub_ns_name_contentaggregation         = "notification-hub-ns-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
   notification_hub_name_contentaggregation            = "notification-hub-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"

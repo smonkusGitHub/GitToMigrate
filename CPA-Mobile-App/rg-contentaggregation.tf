@@ -64,7 +64,7 @@ module "avm-res-sql-server-database-contentaggregation" {
     name                            = local.sql_database_name_contentaggregation
     tags                            = var.tags
     sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }    
-    sku_name                        = local.sql_database_sku_name
+    sku_name                        = "GP_S_Gen5_4"
     auto_pause_delay_in_minutes     = 60
     collation                       = local.sql_database_collation
     create_mode                     = local.sql_database_create_mode
@@ -80,4 +80,12 @@ module "avm-res-sql-server-database-contentaggregation" {
       }
 }
 
-
+# ------------------------------------------------------------
+# Azurerm - Manages an Elastic Job Agent
+# ------------------------------------------------------------
+resource "azurerm_mssql_job_agent" "contentaggregation_job_agent" {
+    name                            = local.sql_job_agent_name_contentaggregation
+    location                        = var.location
+    tags                            = var.tags
+    database_id                     = module.avm-res-sql-server-database-contentaggregation.resource_id
+}
