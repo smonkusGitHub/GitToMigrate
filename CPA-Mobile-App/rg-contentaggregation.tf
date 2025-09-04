@@ -78,7 +78,7 @@ module "avm-res-sql-server-database-contentaggregation" {
         retention_days              = local.sql_database_retention_days
         backup_interval_in_hours    = local.sql_database_backup_interval_in_hours
       }
-}}
+}
 
 # ------------------------------------------------------------
 # Azurerm - Manages an Elastic Job Agent
