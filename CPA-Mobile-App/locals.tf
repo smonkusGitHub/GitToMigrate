@@ -15,6 +15,7 @@ locals {
   sql_job_agent_name_contentaggregation               = "sqldb-job-agent-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
   sql_job_agent_credential_name_contentaggregation    = "sqldb-job-agent-cred-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
   sql_job_target_group_name_contentaggregation        = "sqldb-job-targrp-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
+  sql_job_name_contentaggregation                     = "sqldb-job-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
 
 
   # Notification Hub

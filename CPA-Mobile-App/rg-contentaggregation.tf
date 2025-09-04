@@ -114,3 +114,12 @@ resource "azurerm_mssql_job_target_group" "contentaggregation_job_target_group" 
         job_credential_id           = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
     }
 }
+
+# ------------------------------------------------------------
+# Azurerm - Manages an Elastic Job
+# ------------------------------------------------------------
+resource "azurerm_mssql_job" "contentaggregation_job" {
+    name                            = local.sql_job_name_contentaggregation
+    job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+    description                     = "contentaggregation job - delete old notification data"
+}
