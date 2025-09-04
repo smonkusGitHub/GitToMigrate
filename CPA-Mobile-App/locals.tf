@@ -234,7 +234,8 @@ locals {
   sql_server_azuread_administrator_name               = "sqlaccess-sql-ae-tst-mobileapp-admins"
   sql_server_azuread_administrator_id                 = "d5623571-f297-4a07-853d-e707a8bb89a3"
 
-  sql_database_sku_name                               = "GP_S_Gen5_2"
+  sql_database_sku_name                               = "GP_S_Gen5_4"
+  sql_database_auto_pause_delay_in_minutes            = -1
   sql_database_collation                              = "SQL_Latin1_General_CP1_CI_AS"
   sql_database_create_mode                            = "Default"
   sql_database_max_size_gb                            = 32
