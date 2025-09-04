@@ -64,7 +64,9 @@ module "avm-res-sql-server-database-contentaggregation" {
     name                            = local.sql_database_name_contentaggregation
     tags                            = var.tags
     sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }    
-    sku_name                        = "GP_Gen5_4"
+    sku_name                        = "GP_Gen5_4" 
+    # must not be serverless, it won't works with auto-pause disabled for this subscription
+    # Estimated cost / month $799.93 AUD, must remove once testing is done
     auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
     collation                       = local.sql_database_collation
     create_mode                     = local.sql_database_create_mode
@@ -88,4 +90,14 @@ resource "azurerm_mssql_job_agent" "contentaggregation_job_agent" {
     location                        = var.location
     tags                            = var.tags
     database_id                     = module.avm-res-sql-server-database-contentaggregation.resource_id
+}
+
+# ------------------------------------------------------------
+# Azurerm - Manages an Elastic Job Credential
+# ------------------------------------------------------------
+resource "azurerm_mssql_job_credential" "contentaggregation_job_agent_credential" {
+  name                              = local.sql_job_agent_credential_name_contentaggregation
+  job_agent_id                      = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+  username                          = var.sit_sql_admin_login
+  password                          = var.sit_sql_admin_password 
 }
