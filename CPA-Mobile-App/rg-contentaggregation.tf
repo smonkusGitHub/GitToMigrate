@@ -65,7 +65,7 @@ module "avm-res-sql-server-database-contentaggregation" {
     tags                            = var.tags
     sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }    
     sku_name                        = "GP_S_Gen5_4"
-    auto_pause_delay_in_minutes     = 60
+    auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
     collation                       = local.sql_database_collation
     create_mode                     = local.sql_database_create_mode
     ledger_enabled                  = false    
