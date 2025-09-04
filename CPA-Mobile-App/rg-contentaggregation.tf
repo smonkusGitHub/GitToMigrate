@@ -96,8 +96,21 @@ resource "azurerm_mssql_job_agent" "contentaggregation_job_agent" {
 # Azurerm - Manages an Elastic Job Credential
 # ------------------------------------------------------------
 resource "azurerm_mssql_job_credential" "contentaggregation_job_agent_credential" {
-  name                              = local.sql_job_agent_credential_name_contentaggregation
-  job_agent_id                      = azurerm_mssql_job_agent.contentaggregation_job_agent.id
-  username                          = var.sit_sql_admin_login
-  password                          = var.sit_sql_admin_password 
+    name                            = local.sql_job_agent_credential_name_contentaggregation
+    job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+    username                        = var.sit_sql_admin_login
+    password                        = var.sit_sql_admin_password 
+}
+
+# ------------------------------------------------------------
+# Azurerm - Manages a Job Target Group
+# ------------------------------------------------------------
+resource "azurerm_mssql_job_target_group" "contentaggregation_job_target_group" {
+    name                            = local.sql_job_target_group_name_contentaggregation
+    job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+
+    job_target {
+        server_name                 = module.avm-res-sql-server-shared.resource_name
+        job_credential_id           = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
+    }
 }
