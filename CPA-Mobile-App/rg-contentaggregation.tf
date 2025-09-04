@@ -121,5 +121,23 @@ resource "azurerm_mssql_job_target_group" "contentaggregation_job_target_group" 
 resource "azurerm_mssql_job" "contentaggregation_job" {
     name                            = local.sql_job_name_contentaggregation
     job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
-    description                     = "contentaggregation job - delete old notification data"
+    description                     = "Contentaggregation Job - Clear unwanted Notification data"
+}
+
+# ------------------------------------------------------------
+# Azurerm - Manages an Elastic Job Step
+# ------------------------------------------------------------
+resource "azurerm_mssql_job_step" "contentaggregation_job_step1" {
+    name                            = local.sql_job_step1_name_contentaggregation
+    job_id                          = azurerm_mssql_job.contentaggregation_job.id
+    job_credential_id               = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
+    job_target_group_id             = azurerm_mssql_job_target_group.contentaggregation_job_target_group.id
+    job_step_index                  = 1
+    sql_script                      = <<EOT
+                                        DELETE FROM MEMBER_LOGINS
+                                        WHERE MEMBER_ID IN (SELECT ml.MEMBER_ID
+                                                            FROM MEMBER_LOGINS ml
+                                                            GROUP BY ml.MEMBER_ID
+                                                            HAVING COUNT(*) > 20);
+                                        EOT
 }
