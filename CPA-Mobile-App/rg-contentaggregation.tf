@@ -70,17 +70,16 @@ module "avm-res-sql-server-database-contentaggregation" {
     # must not be serverless, it won't works with auto-pause disabled for this subscription
     # Estimated cost / month $799.93 AUD, must remove once testing is done
     auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
-    collation                       = local.sql_database_collation
-    create_mode                     = local.sql_database_create_mode
+    collation                       = "SQL_Latin1_General_CP1_CI_AS"
+    create_mode                     = "Default"
     ledger_enabled                  = false    
-    max_size_gb                     = local.sql_database_max_size_gb
-    min_capacity                    = local.sql_database_min_capacity
-    read_replica_count              = local.sql_database_read_replica_count
+    max_size_gb                     = 250
+    read_replica_count              = 0
     read_scale                      = false
     zone_redundant                  = false    
     short_term_retention_policy     = {
-        retention_days              = local.sql_database_retention_days
-        backup_interval_in_hours    = local.sql_database_backup_interval_in_hours
+        retention_days              = 7
+        backup_interval_in_hours    = 12
       }
 }
 
