@@ -63,8 +63,10 @@ module "avm-res-sql-server-database-contentaggregation" {
     version                         = "0.1.3"
     name                            = local.sql_database_name_contentaggregation
     tags                            = var.tags
-    sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }    
-    sku_name                        = "GP_Gen5_4" 
+    sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }
+    # Cheapest supported SKU
+    sku_name                        = "S1" 
+    #sku_name                        = "GP_Gen5_4" 
     # must not be serverless, it won't works with auto-pause disabled for this subscription
     # Estimated cost / month $799.93 AUD, must remove once testing is done
     auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
@@ -82,62 +84,62 @@ module "avm-res-sql-server-database-contentaggregation" {
       }
 }
 
-# ------------------------------------------------------------
-# Azurerm - Manages an Elastic Job Agent
-# ------------------------------------------------------------
-resource "azurerm_mssql_job_agent" "contentaggregation_job_agent" {
-    name                            = local.sql_job_agent_name_contentaggregation
-    location                        = var.location
-    tags                            = var.tags
-    database_id                     = module.avm-res-sql-server-database-contentaggregation.resource_id
-}
+# # ------------------------------------------------------------
+# # Azurerm - Manages an Elastic Job Agent
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job_agent" "contentaggregation_job_agent" {
+#     name                            = local.sql_job_agent_name_contentaggregation
+#     location                        = var.location
+#     tags                            = var.tags
+#     database_id                     = module.avm-res-sql-server-database-contentaggregation.resource_id
+# }
 
-# ------------------------------------------------------------
-# Azurerm - Manages an Elastic Job Credential
-# ------------------------------------------------------------
-resource "azurerm_mssql_job_credential" "contentaggregation_job_agent_credential" {
-    name                            = local.sql_job_agent_credential_name_contentaggregation
-    job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
-    username                        = var.sit_sql_admin_login
-    password                        = var.sit_sql_admin_password 
-}
+# # ------------------------------------------------------------
+# # Azurerm - Manages an Elastic Job Credential
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job_credential" "contentaggregation_job_agent_credential" {
+#     name                            = local.sql_job_agent_credential_name_contentaggregation
+#     job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+#     username                        = var.sit_sql_admin_login
+#     password                        = var.sit_sql_admin_password 
+# }
 
-# ------------------------------------------------------------
-# Azurerm - Manages a Job Target Group
-# ------------------------------------------------------------
-resource "azurerm_mssql_job_target_group" "contentaggregation_job_target_group" {
-    name                            = local.sql_job_target_group_name_contentaggregation
-    job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+# # ------------------------------------------------------------
+# # Azurerm - Manages a Job Target Group
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job_target_group" "contentaggregation_job_target_group" {
+#     name                            = local.sql_job_target_group_name_contentaggregation
+#     job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
 
-    job_target {
-        server_name                 = module.avm-res-sql-server-shared.resource_name
-        job_credential_id           = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
-    }
-}
+#     job_target {
+#         server_name                 = module.avm-res-sql-server-shared.resource_name
+#         job_credential_id           = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
+#     }
+# }
 
-# ------------------------------------------------------------
-# Azurerm - Manages an Elastic Job
-# ------------------------------------------------------------
-resource "azurerm_mssql_job" "contentaggregation_job" {
-    name                            = local.sql_job_name_contentaggregation
-    job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
-    description                     = "Contentaggregation Job - Clear unwanted Notification data"
-}
+# # ------------------------------------------------------------
+# # Azurerm - Manages an Elastic Job
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job" "contentaggregation_job" {
+#     name                            = local.sql_job_name_contentaggregation
+#     job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+#     description                     = "Contentaggregation Job - Clear unwanted Notification data"
+# }
 
-# ------------------------------------------------------------
-# Azurerm - Manages an Elastic Job Step
-# ------------------------------------------------------------
-resource "azurerm_mssql_job_step" "contentaggregation_job_step1" {
-    name                            = local.sql_job_step1_name_contentaggregation
-    job_id                          = azurerm_mssql_job.contentaggregation_job.id
-    job_credential_id               = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
-    job_target_group_id             = azurerm_mssql_job_target_group.contentaggregation_job_target_group.id
-    job_step_index                  = 1
-    sql_script                      = <<EOT
-                                        DELETE FROM MEMBER_LOGINS
-                                        WHERE MEMBER_ID IN (SELECT ml.MEMBER_ID
-                                                            FROM MEMBER_LOGINS ml
-                                                            GROUP BY ml.MEMBER_ID
-                                                            HAVING COUNT(*) > 20);
-                                        EOT
-}
+# # ------------------------------------------------------------
+# # Azurerm - Manages an Elastic Job Step
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job_step" "contentaggregation_job_step1" {
+#     name                            = local.sql_job_step1_name_contentaggregation
+#     job_id                          = azurerm_mssql_job.contentaggregation_job.id
+#     job_credential_id               = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
+#     job_target_group_id             = azurerm_mssql_job_target_group.contentaggregation_job_target_group.id
+#     job_step_index                  = 1
+#     sql_script                      = <<EOT
+#                                         DELETE FROM MEMBER_LOGINS
+#                                         WHERE MEMBER_ID IN (SELECT ml.MEMBER_ID
+#                                                             FROM MEMBER_LOGINS ml
+#                                                             GROUP BY ml.MEMBER_ID
+#                                                             HAVING COUNT(*) > 20);
+#                                         EOT
+# }
