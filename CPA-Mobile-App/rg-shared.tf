@@ -431,7 +431,7 @@ module "avm-res-sql-server-shared" {
     source                          = "Azure/avm-res-sql-server/azurerm"
     version                         = "0.1.5"
     server_version                  = "12.0"    
-    resource_group_name             = module.avm-res-resources-resourcegroup-shared.name      
+    resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
     name                            = local.sql_server_name_shared
     location                        = var.location
     tags                            = var.tags
@@ -770,12 +770,11 @@ resource "azurerm_user_assigned_identity" "sql_job_agent_identity" {
   name                            = "umi-sql-job-agent"
   location                        = var.location
   tags                            = var.tags
-  resource_group_name             = module.avm-res-sql-server-shared.resource_name  
+  resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
 }
 
-
 # ------------------------------------------------------------
-# Module to create AVM Azure SQL Database
+# Module to create AVM Azure SQL Database (JobDB)
 # ------------------------------------------------------------
 module "avm-res-sql-server-database-jobdb" {
     source                          = "Azure/avm-res-sql-server/azurerm//modules/database"
