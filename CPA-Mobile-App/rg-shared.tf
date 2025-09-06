@@ -764,6 +764,17 @@ module "avm-res-sql-server-shared" {
 # }
 
 # ------------------------------------------------------------
+# Azurerm - Manages a User Assigned Identity
+# ------------------------------------------------------------
+resource "azurerm_user_assigned_identity" "sql_job_agent_identity" {
+  name                            = "umi-sql-job-agent"
+  location                        = var.location
+  tags                            = var.tags
+  resource_group_name             = module.avm-res-sql-server-shared.resource_name  
+}
+
+
+# ------------------------------------------------------------
 # Module to create AVM Azure SQL Database
 # ------------------------------------------------------------
 module "avm-res-sql-server-database-jobDb" {
