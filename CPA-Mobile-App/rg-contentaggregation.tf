@@ -65,10 +65,8 @@ module "avm-res-sql-server-database-contentaggregation" {
     tags                            = var.tags
     sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }
     # Cheapest supported SKU
+    # Standard (S1) Cost per DTU (in AUD) 2.40 DTUs selected x 20 Estimated cost / month 48.06 AUD
     sku_name                        = "S1" 
-    #sku_name                        = "GP_Gen5_4" 
-    # must not be serverless, it won't works with auto-pause disabled for this subscription
-    # Estimated cost / month $799.93 AUD, must remove once testing is done
     auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
     collation                       = "SQL_Latin1_General_CP1_CI_AS"
     create_mode                     = "Default"

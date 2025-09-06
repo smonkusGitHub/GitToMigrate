@@ -248,6 +248,12 @@ locals {
   sql_database_retention_days                         = 7
   sql_database_backup_interval_in_hours               = 12
   
+  # -------------------------------------------------
+  # SQL Job DB for SQL Elastic Job Agent
+  # -------------------------------------------------
+  sql_database_name_jobdb                             = "sqldb-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-jobdb"
+  sql_database_jobdb_sku_name                         = "S1"
+  sql_database_jobdb_max_size_gb                      = 250
   # # -------------------------------------------------
   # # Storage Account
   # # -------------------------------------------------

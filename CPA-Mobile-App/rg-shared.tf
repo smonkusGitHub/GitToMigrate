@@ -762,3 +762,29 @@ module "avm-res-sql-server-shared" {
 #     private_service_connection_name = local.private_service_connection_appconfig_name_shared
 #     subresource_names               = ["configurationStores"]
 # }
+
+# ------------------------------------------------------------
+# Module to create AVM Azure SQL Database
+# ------------------------------------------------------------
+module "avm-res-sql-server-database-jobDb" {
+    source                          = "Azure/avm-res-sql-server/azurerm//modules/database"
+    version                         = "0.1.3"
+    name                            = local.sql_database_name_jobdb
+    tags                            = var.tags
+    sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }
+    # Cheapest supported SKU
+    # Standard (S1) Cost per DTU (in AUD) 2.40 DTUs selected x 20 Estimated cost / month 48.06 AUD
+    sku_name                        = local.sql_database_jobdb_sku_name
+    auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
+    collation                       = local.sql_database_collation
+    create_mode                     = local.sql_database_create_mode
+    ledger_enabled                  = false    
+    max_size_gb                     = local.sql_database_jobdb_max_size_gb
+    read_replica_count              = local.sql_database_read_replica_count
+    read_scale                      = false
+    zone_redundant                  = false    
+    short_term_retention_policy     = {
+        retention_days              = local.sql_database_retention_days
+        backup_interval_in_hours    = local.sql_database_backup_interval_in_hours
+      }
+}
