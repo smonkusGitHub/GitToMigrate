@@ -777,7 +777,7 @@ resource "azurerm_user_assigned_identity" "sql_job_agent_identity" {
 # ------------------------------------------------------------
 # Module to create AVM Azure SQL Database
 # ------------------------------------------------------------
-module "avm-res-sql-server-database-jobDb" {
+module "avm-res-sql-server-database-jobdb" {
     source                          = "Azure/avm-res-sql-server/azurerm//modules/database"
     version                         = "0.1.3"
     name                            = local.sql_database_name_jobdb
