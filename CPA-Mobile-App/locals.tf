@@ -12,13 +12,6 @@ locals {
   resource_group_name_contentaggregation              = "rg-${var.location_short_name}-${var.environment_short_name}-${var.project_long_name}-contentaggregation-01"
   # SQL
   sql_database_name_contentaggregation                = "sqldb-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
-  sql_job_agent_name_contentaggregation               = "sqldb-job-agent-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
-  sql_job_agent_credential_name_contentaggregation    = "sqldb-job-agent-cred-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
-  sql_job_target_group_name_contentaggregation        = "sqldb-job-targrp-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
-  sql_job_name_contentaggregation                     = "sqldb-job-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
-  sql_job_step1_name_contentaggregation               = "sqldb-job-step1-cpa-web-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
-
-
   # Notification Hub
   notification_hub_ns_name_contentaggregation         = "notification-hub-ns-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
   notification_hub_name_contentaggregation            = "notification-hub-${var.environment_short_name}-${var.location_short_name}-01-contentaggregation"
@@ -255,6 +248,11 @@ locals {
   sql_database_name_jobdb                             = "sqldb-${var.environment_short_name}-${var.location_short_name}-01-jobdb"
   sql_database_jobdb_sku_name                         = "S1"
   sql_database_jobdb_max_size_gb                      = 250
+
+  sql_job_agent_name_jobdb                            = "sqldb-job-agent-${var.environment_short_name}-${var.location_short_name}-01-jobdb"
+  sql_job_agent_credential_name_jobdb                 = "sqldb-job-agent-cred-${var.environment_short_name}-${var.location_short_name}-01-jobdb"
+  sql_job_target_group_name_jobdb                     = "sqldb-job-targrp-${var.environment_short_name}-${var.location_short_name}-01-jobdb"
+  
   # # -------------------------------------------------
   # # Storage Account
   # # -------------------------------------------------

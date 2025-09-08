@@ -798,3 +798,66 @@ module "avm-res-sql-server-database-jobdb" {
         backup_interval_in_hours    = local.sql_database_backup_interval_in_hours
       }
 }
+
+# ------------------------------------------------------------
+# Azurerm - Manages an Elastic Job Agent (JobDB)
+# ------------------------------------------------------------
+resource "azurerm_mssql_job_agent" "sql_job_agent" {
+    name                            = local.sql_job_agent_name_jobdb
+    location                        = var.location
+    tags                            = var.tags
+    database_id                     = module.avm-res-sql-server-database-jobdb.resource_id
+
+    identity {
+    type                            = "UserAssigned"
+    identity_ids                    = [azurerm_user_assigned_identity.sql_job_agent_identity.id]
+  }
+}
+
+# ------------------------------------------------------------
+# Azurerm - Manages a Job Target Group
+# ------------------------------------------------------------
+resource "azurerm_mssql_job_target_group" "job_target_group" {
+    name                            = local.sql_job_target_group_name_jobdb
+    job_agent_id                    = azurerm_mssql_job_agent.sql_job_agent.id
+    job_target {
+        server_name                 = module.avm-res-sql-server-shared.resource_name        
+    }
+}
+
+# # ------------------------------------------------------------
+# # Azurerm - Manages an Elastic Job
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job" "contentaggregation_job" {
+#     name                            = local.sql_job_name_contentaggregation
+#     job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+#     description                     = "Contentaggregation Job - Clear unwanted Notification data"
+# }
+
+# # ------------------------------------------------------------
+# # Azurerm - Manages an Elastic Job Step
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job_step" "contentaggregation_job_step1" {
+#     name                            = local.sql_job_step1_name_contentaggregation
+#     job_id                          = azurerm_mssql_job.contentaggregation_job.id
+#     job_credential_id               = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
+#     job_target_group_id             = azurerm_mssql_job_target_group.contentaggregation_job_target_group.id
+#     job_step_index                  = 1
+#     sql_script                      = <<EOT
+#                                         DELETE FROM MEMBER_LOGINS
+#                                         WHERE MEMBER_ID IN (SELECT ml.MEMBER_ID
+#                                                             FROM MEMBER_LOGINS ml
+#                                                             GROUP BY ml.MEMBER_ID
+#                                                             HAVING COUNT(*) > 20);
+#                                         EOT
+# }
+
+# ------------------------------------------------------------
+# Azurerm - Manages an Elastic Job Credential (JobDB)
+# ------------------------------------------------------------
+# resource "azurerm_mssql_job_credential" "contentaggregation_job_agent_credential" {
+#     name                            = local.sql_job_agent_credential_name_jobdb
+#     job_agent_id                    = azurerm_mssql_job_agent.sql_job_agent.id
+#     identity_id      = azurerm_user_assigned_identity.sql_job_agent_identity.id
+#     credential_type  = "UserAssignedIdentity"
+# }
