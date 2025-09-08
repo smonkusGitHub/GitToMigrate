@@ -773,6 +773,21 @@ resource "azurerm_user_assigned_identity" "sql_job_agent_identity" {
   resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
 }
 
+resource "azapi_resource" "job_cred_mi" {
+  provider = azapi
+  type      = "Microsoft.Sql/servers/jobAgents/credentials@2021-11-01-preview"
+  name      = "job-cred-mi"
+  parent_id = azurerm_mssql_job_agent.sql_job_agent.id
+
+  body = {
+    properties = {
+      identity = {
+        type = "UserAssigned" # or "SystemAssigned"
+      }
+    }
+  }
+}
+
 # ------------------------------------------------------------
 # Module to create AVM Azure SQL Database (JobDB)
 # ------------------------------------------------------------
