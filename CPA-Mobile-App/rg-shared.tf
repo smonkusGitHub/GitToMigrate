@@ -840,8 +840,8 @@ resource "azurerm_mssql_job_target_group" "job_target_group_server" {
     job_agent_id                    = azurerm_mssql_job_agent.sql_job_agent.id
     job_target {
         server_name                 = module.avm-res-sql-server-shared.resource_name
-        # membership_type             = "Include"
-        # job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
+        membership_type             = "Include"
+        job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
     }
 }
 
