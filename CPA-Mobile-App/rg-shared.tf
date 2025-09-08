@@ -813,7 +813,7 @@ resource "azurerm_mssql_job_agent" "sql_job_agent" {
     identity_ids                    = [azurerm_user_assigned_identity.sql_job_agent_identity.id]
   }
 }
-
+/*
 # ------------------------------------------------------------
 # Azurerm - Manages a Job Target Group
 # ------------------------------------------------------------
@@ -826,7 +826,7 @@ resource "azurerm_mssql_job_target_group" "job_target_group_server" {
         job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
     }
 }
-
+*/
 # # ------------------------------------------------------------
 # # Azurerm - Manages an Elastic Job
 # # ------------------------------------------------------------
