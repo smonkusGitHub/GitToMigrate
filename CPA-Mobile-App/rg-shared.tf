@@ -767,10 +767,10 @@ module "avm-res-sql-server-shared" {
 # Azurerm - Manages a User Assigned Identity
 # ------------------------------------------------------------
 resource "azurerm_user_assigned_identity" "sql_job_agent_identity" {
-  name                            = "umi-sql-job-agent"
-  location                        = var.location
-  tags                            = var.tags
-  resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
+    name                            = "umi-sql-job-agent"
+    location                        = var.location
+    tags                            = var.tags
+    resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
 }
 
 # ------------------------------------------------------------
@@ -813,6 +813,7 @@ resource "azurerm_mssql_job_agent" "sql_job_agent" {
     identity_ids                    = [azurerm_user_assigned_identity.sql_job_agent_identity.id]
   }
 }
+
 /*
 # ------------------------------------------------------------
 # Azurerm - Manages a Job Target Group
