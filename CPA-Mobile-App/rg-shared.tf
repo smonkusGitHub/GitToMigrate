@@ -825,8 +825,9 @@ resource "azapi_resource" "job_credential_umi" {
   
   body = {
     properties = {
-      type       = "UserAssignedIdentity"
-      identityId = azurerm_user_assigned_identity.sql_job_agent_identity.id
+      userAssignedIdentity = {
+        id = azurerm_user_assigned_identity.sql_job_agent_identity.id
+      }
     }
   }
 }
