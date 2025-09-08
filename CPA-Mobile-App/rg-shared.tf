@@ -773,21 +773,6 @@ resource "azurerm_user_assigned_identity" "sql_job_agent_identity" {
   resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
 }
 
-resource "azapi_resource" "job_cred_mi" {
-  provider = azapi
-  type      = "Microsoft.Sql/servers/jobAgents/credentials@2021-11-01-preview"
-  name      = "job-cred-mi"
-  parent_id = azurerm_mssql_job_agent.sql_job_agent.id
-
-  body = {
-    properties = {
-      identity = {
-        type = "UserAssigned" # or "SystemAssigned"
-      }
-    }
-  }
-}
-
 # ------------------------------------------------------------
 # Module to create AVM Azure SQL Database (JobDB)
 # ------------------------------------------------------------
@@ -828,7 +813,7 @@ resource "azurerm_mssql_job_agent" "sql_job_agent" {
     identity_ids                    = [azurerm_user_assigned_identity.sql_job_agent_identity.id]
   }
 }
-/*
+
 # ------------------------------------------------------------
 # Azurerm - Manages a Job Target Group
 # ------------------------------------------------------------
@@ -838,31 +823,8 @@ resource "azurerm_mssql_job_target_group" "job_target_group_server" {
     job_target {
         server_name                 = module.avm-res-sql-server-shared.resource_name
         membership_type             = "Include"
-        #job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
+        job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
     }
-}
-*/
-# ------------------------------------------------------------
-# Azurerm - Manages a Job Target Group using AzAPI
-# ------------------------------------------------------------
-resource "azapi_resource" "job_target_group" {
-  type      = "Microsoft.Sql/servers/jobAgents/targetGroups@2021-11-01-preview"
-  provider = azapi
-  name      = local.sql_job_target_group_name_jobdb
-  parent_id = azurerm_mssql_job_agent.sql_job_agent.id
-
-  body = {
-    properties = {
-      members = [
-        {
-          type           = "SqlServer"
-          serverName     = module.avm-res-sql-server-shared.resource_name
-          membershipType = "Include"
-          # No jobCredentialId here
-        }
-      ]
-    }
-  }
 }
 
 # # ------------------------------------------------------------
