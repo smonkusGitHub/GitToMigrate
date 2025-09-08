@@ -814,37 +814,37 @@ resource "azurerm_mssql_job_agent" "sql_job_agent" {
   }
 }
 
-# ------------------------------------------------------------
-# AzAPI - Elastic Job Credential using UMI
-# ------------------------------------------------------------
-resource "azapi_resource" "job_credential_umi" {
-  type      = "Microsoft.Sql/servers/jobAgents/credentials@2024-11-01-preview"
-  name      = "jobcred-umi"
-  parent_id = azurerm_mssql_job_agent.sql_job_agent.id
-  schema_validation_enabled = false
+# # ------------------------------------------------------------
+# # AzAPI - Elastic Job Credential using UMI
+# # ------------------------------------------------------------
+# resource "azapi_resource" "job_credential_umi" {
+#   type      = "Microsoft.Sql/servers/jobAgents/credentials@2024-11-01-preview"
+#   name      = "jobcred-umi"
+#   parent_id = azurerm_mssql_job_agent.sql_job_agent.id
+#   schema_validation_enabled = false
   
-  body = {
-    properties = {
-      userAssignedIdentity = {
-        id = azurerm_user_assigned_identity.sql_job_agent_identity.id
-      }
-    }
-  }
-}
-
-# # ------------------------------------------------------------
-# # Azurerm - Manages a Job Target Group
-# # ------------------------------------------------------------
-# resource "azurerm_mssql_job_target_group" "job_target_group_server" {
-#     name                            = local.sql_job_target_group_name_jobdb
-#     job_agent_id                    = azurerm_mssql_job_agent.sql_job_agent.id
-#     job_target {
-#         type                        = "SqlServer"
-#         server_name                 = module.avm-res-sql-server-shared.resource_name
-#         membership_type             = "Include"
-#         job_credential_id           = azapi_resource.job_credential_umi.id
+#   body = {
+#     properties = {
+#       userAssignedIdentity = {
+#         id = azurerm_user_assigned_identity.sql_job_agent_identity.id
+#       }
 #     }
+#   }
 # }
+
+# ------------------------------------------------------------
+# Azurerm - Manages a Job Target Group
+# ------------------------------------------------------------
+resource "azurerm_mssql_job_target_group" "job_target_group_server" {
+    name                            = local.sql_job_target_group_name_jobdb
+    job_agent_id                    = azurerm_mssql_job_agent.sql_job_agent.id
+    job_target {
+        type                        = "SqlServer"
+        server_name                 = module.avm-res-sql-server-shared.resource_name
+        # membership_type             = "Include"
+        # job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
+    }
+}
 
 # # ------------------------------------------------------------
 # # Azurerm - Manages an Elastic Job
