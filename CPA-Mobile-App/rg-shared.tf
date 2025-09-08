@@ -814,24 +814,6 @@ resource "azurerm_mssql_job_agent" "sql_job_agent" {
   }
 }
 
-# # ------------------------------------------------------------
-# # AzAPI - Elastic Job Credential using UMI
-# # ------------------------------------------------------------
-# resource "azapi_resource" "job_credential_umi" {
-#   type      = "Microsoft.Sql/servers/jobAgents/credentials@2024-11-01-preview"
-#   name      = "jobcred-umi"
-#   parent_id = azurerm_mssql_job_agent.sql_job_agent.id
-#   schema_validation_enabled = false
-  
-#   body = {
-#     properties = {
-#       userAssignedIdentity = {
-#         id = azurerm_user_assigned_identity.sql_job_agent_identity.id
-#       }
-#     }
-#   }
-# }
-
 # ------------------------------------------------------------
 # Azurerm - Manages a Job Target Group
 # ------------------------------------------------------------
