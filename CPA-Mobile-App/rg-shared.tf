@@ -813,7 +813,7 @@ resource "azurerm_mssql_job_agent" "sql_job_agent" {
     identity_ids                    = [azurerm_user_assigned_identity.sql_job_agent_identity.id]
   }
 }
-
+/*
 # ------------------------------------------------------------
 # Azurerm - Manages a Job Target Group
 # ------------------------------------------------------------
@@ -825,6 +825,29 @@ resource "azurerm_mssql_job_target_group" "job_target_group_server" {
         membership_type             = "Include"
         #job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
     }
+}
+*/
+# ------------------------------------------------------------
+# Azurerm - Manages a Job Target Group using AzAPI
+# ------------------------------------------------------------
+resource "azapi_resource" "job_target_group" {
+  provider = azapi
+  type      = "Microsoft.Sql/servers/jobAgents/targetGroups@2021-11-01-preview"
+  name      = local.sql_job_target_group_name_jobdb
+  parent_id = azurerm_mssql_job_agent.sql_job_agent.id
+
+  body = jsonencode({
+    properties = {
+      members = [
+        {
+          type           = "SqlServer"
+          serverName     = module.avm-res-sql-server-shared.resource_name
+          membershipType = "Include"
+          # Notice: no jobCredentialId here
+        }
+      ]
+    }
+  })
 }
 
 # # ------------------------------------------------------------
