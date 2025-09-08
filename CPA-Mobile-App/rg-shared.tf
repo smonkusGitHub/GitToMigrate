@@ -763,87 +763,87 @@ module "avm-res-sql-server-shared" {
 #     subresource_names               = ["configurationStores"]
 # }
 
-# ------------------------------------------------------------
-# Azurerm - Manages a User Assigned Identity
-# ------------------------------------------------------------
-resource "azurerm_user_assigned_identity" "sql_job_agent_identity" {
-  name                            = "umi-sql-job-agent"
-  location                        = var.location
-  tags                            = var.tags
-  resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
-}
+# # ------------------------------------------------------------
+# # Azurerm - Manages a User Assigned Identity
+# # ------------------------------------------------------------
+# resource "azurerm_user_assigned_identity" "sql_job_agent_identity" {
+#   name                            = "umi-sql-job-agent"
+#   location                        = var.location
+#   tags                            = var.tags
+#   resource_group_name             = module.avm-res-resources-resourcegroup-shared.name
+# }
 
-# ------------------------------------------------------------
-# Module to create AVM Azure SQL Database (JobDB)
-# ------------------------------------------------------------
-module "avm-res-sql-server-database-jobdb" {
-    source                          = "Azure/avm-res-sql-server/azurerm//modules/database"
-    version                         = "0.1.3"
-    name                            = local.sql_database_name_jobdb
-    tags                            = var.tags
-    sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }
-    # Cheapest supported SKU
-    # Standard (S1) Cost per DTU (in AUD) 2.40 DTUs selected x 20 Estimated cost / month 48.06 AUD
-    sku_name                        = local.sql_database_jobdb_sku_name
-    auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
-    collation                       = local.sql_database_collation
-    create_mode                     = local.sql_database_create_mode
-    ledger_enabled                  = false    
-    max_size_gb                     = local.sql_database_jobdb_max_size_gb
-    read_replica_count              = local.sql_database_read_replica_count
-    read_scale                      = false
-    zone_redundant                  = false    
-    short_term_retention_policy     = {
-        retention_days              = local.sql_database_retention_days
-        backup_interval_in_hours    = local.sql_database_backup_interval_in_hours
-      }
-}
+# # ------------------------------------------------------------
+# # Module to create AVM Azure SQL Database (JobDB)
+# # ------------------------------------------------------------
+# module "avm-res-sql-server-database-jobdb" {
+#     source                          = "Azure/avm-res-sql-server/azurerm//modules/database"
+#     version                         = "0.1.3"
+#     name                            = local.sql_database_name_jobdb
+#     tags                            = var.tags
+#     sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }
+#     # Cheapest supported SKU
+#     # Standard (S1) Cost per DTU (in AUD) 2.40 DTUs selected x 20 Estimated cost / month 48.06 AUD
+#     sku_name                        = local.sql_database_jobdb_sku_name
+#     auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
+#     collation                       = local.sql_database_collation
+#     create_mode                     = local.sql_database_create_mode
+#     ledger_enabled                  = false    
+#     max_size_gb                     = local.sql_database_jobdb_max_size_gb
+#     read_replica_count              = local.sql_database_read_replica_count
+#     read_scale                      = false
+#     zone_redundant                  = false    
+#     short_term_retention_policy     = {
+#         retention_days              = local.sql_database_retention_days
+#         backup_interval_in_hours    = local.sql_database_backup_interval_in_hours
+#       }
+# }
 
-# ------------------------------------------------------------
-# Azurerm - Manages an Elastic Job Agent (JobDB)
-# ------------------------------------------------------------
-resource "azurerm_mssql_job_agent" "sql_job_agent" {
-    name                            = local.sql_job_agent_name_jobdb
-    location                        = var.location
-    tags                            = var.tags
-    database_id                     = module.avm-res-sql-server-database-jobdb.resource_id
+# # ------------------------------------------------------------
+# # Azurerm - Manages an Elastic Job Agent (JobDB)
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job_agent" "sql_job_agent" {
+#     name                            = local.sql_job_agent_name_jobdb
+#     location                        = var.location
+#     tags                            = var.tags
+#     database_id                     = module.avm-res-sql-server-database-jobdb.resource_id
 
-    identity {
-    type                            = "UserAssigned"
-    identity_ids                    = [azurerm_user_assigned_identity.sql_job_agent_identity.id]
-  }
-}
+#     identity {
+#     type                            = "UserAssigned"
+#     identity_ids                    = [azurerm_user_assigned_identity.sql_job_agent_identity.id]
+#   }
+# }
 
-# ------------------------------------------------------------
-# AzAPI - Elastic Job Credential using UMI
-# ------------------------------------------------------------
-resource "azapi_resource" "job_credential_umi" {
-  type      = "Microsoft.Sql/servers/jobAgents/credentials@2024-11-01-preview"
-  name      = "jobcred-umi"
-  parent_id = azurerm_mssql_job_agent.sql_job_agent.id
-  schema_validation_enabled = false
+# # ------------------------------------------------------------
+# # AzAPI - Elastic Job Credential using UMI
+# # ------------------------------------------------------------
+# resource "azapi_resource" "job_credential_umi" {
+#   type      = "Microsoft.Sql/servers/jobAgents/credentials@2024-11-01-preview"
+#   name      = "jobcred-umi"
+#   parent_id = azurerm_mssql_job_agent.sql_job_agent.id
+#   schema_validation_enabled = false
   
-  body = {
-    properties = {
-      type       = "UserAssignedIdentity"
-      identityId = azurerm_user_assigned_identity.sql_job_agent_identity.id
-    }
-  }
-}
+#   body = {
+#     properties = {
+#       type       = "UserAssignedIdentity"
+#       identityId = azurerm_user_assigned_identity.sql_job_agent_identity.id
+#     }
+#   }
+# }
 
-# ------------------------------------------------------------
-# Azurerm - Manages a Job Target Group
-# ------------------------------------------------------------
-resource "azurerm_mssql_job_target_group" "job_target_group" {
-    name                            = local.sql_job_target_group_name_jobdb
-    job_agent_id                    = azurerm_mssql_job_agent.sql_job_agent.id
-    job_target {
-        server_name                 = module.avm-res-sql-server-shared.resource_name
-        membership_type             = "Include"
-        type                        = "SqlServer"
-        job_credential_id           = azapi_resource.job_credential_umi.id
-    }
-}
+# # ------------------------------------------------------------
+# # Azurerm - Manages a Job Target Group
+# # ------------------------------------------------------------
+# resource "azurerm_mssql_job_target_group" "job_target_group" {
+#     name                            = local.sql_job_target_group_name_jobdb
+#     job_agent_id                    = azurerm_mssql_job_agent.sql_job_agent.id
+#     job_target {
+#         server_name                 = module.avm-res-sql-server-shared.resource_name
+#         membership_type             = "Include"
+#         type                        = "SqlServer"
+#         job_credential_id           = azapi_resource.job_credential_umi.id
+#     }
+# }
 
 # # ------------------------------------------------------------
 # # Azurerm - Manages an Elastic Job
