@@ -823,7 +823,7 @@ resource "azurerm_mssql_job_target_group" "job_target_group_server" {
     job_target {
         server_name                 = module.avm-res-sql-server-shared.resource_name
         membership_type             = "Include"
-        job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
+        #job_credential_id           = azurerm_user_assigned_identity.sql_job_agent_identity.id
     }
 }
 
