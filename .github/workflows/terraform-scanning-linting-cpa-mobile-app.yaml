@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
-      - main
     paths:
+      - 'CPA-Mobile-App/*.tf'
       - 'CPA-Mobile-App/**/*.tf'
   workflow_dispatch:
 
