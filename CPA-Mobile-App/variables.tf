@@ -16,7 +16,7 @@ variable "project_long_name" {
 
 variable "environment_short_name" {
   description = "The environment name for the solution, used for naming purposes."
-  default = "dev"
+  default = "tst"
   type        = string
 }
 
@@ -67,12 +67,6 @@ variable "client_id" {
   type        = string
 }
 
-variable "client_secret" {
-  description = "Specifies the client secret for the azure service principal"
-  type        = string
-  sensitive   = true
-}
-
 variable "sit_sql_admin_login" {
   description = "SQL Admin Login"
   type        = string
@@ -83,6 +77,12 @@ variable "sit_sql_admin_password" {
   description = "SQL Admin Password"
   type        = string
   sensitive   = true    
+}
+
+variable "client_secret" {
+  description = "Specifies the client secret for the azure service principal"
+  type        = string
+  sensitive   = true
 }
 
 variable "sit_private_endpoint_subnet_id" {
@@ -109,79 +109,59 @@ variable "sit_notification_hub_gcp_client_email" {
 # -------------------------------------------------
 # Local Variable
 # -------------------------------------------------
-# variable "containers_course" {
-#   description = "List of storage containers to create for courses"
-#   type = list(object({
-#     name                  = string
-#     container_access_type = string
-#   }))
-# }
-
-variable "authorization_rules_shared_course" {
-  description = "Authorization rules for the Service Bus namespace in shared for courses"
-  type = map(object({
-    name   = optional(string, null)
-    send   = optional(bool, false)
-    listen = optional(bool, false)
-    manage = optional(bool, false)
+variable "containers_course" {
+  description = "List of storage containers to create for courses"
+  type = list(object({
+    name                  = string
+    container_access_type = string
   }))
 }
 
-# variable "storage_containers_podcast" {
-#   description = "List of storage containers to create for podcast"
-#   type = list(object({
-#     name                  = string
-#     container_access_type = string
-#   }))
-# }
+variable "storage_containers_podcast" {
+  description = "List of storage containers to create for podcast"
+  type = list(object({
+    name                  = string
+    container_access_type = string
+  }))
+}
 
-# variable "storage_queues_podcast" {
-#   description = "List of storage queues to create for podcast"
-#   type = list(object({
-#     name                  = string    
-#   }))
-# }
+variable "storage_queues_podcast" {
+  description = "List of storage queues to create for podcast"
+  type = list(object({
+    name                  = string    
+  }))
+}
 
-# variable "storage_tables_podcast" {
-#   description = "List of storage tables to create for podcast"
-#   type = list(object({
-#     name                  = string    
-#   }))
-# }
+variable "storage_tables_podcast" {
+  description = "List of storage tables to create for podcast"
+  type = list(object({
+    name                  = string    
+  }))
+}
 
-# variable "private_endpoints_service_connections_podcast" {
-#   description = "List of private end point connections to create for podcast"
-#   type = list(object({
-#     name                    = string  # private endpoint resource name.
-#     subresource_name        = string  # subresource type, like "blob", "queue", "table"
-#     network_interface_name  = string  # NIC (network interface) name
-#   }))
-# }
+variable "private_dns_zone_ids_by_type" {
+  description = "Mapping between subresource type and DNS zone IDs"
+  type        = map(string)
+  default = {
+    blob  = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
+    queue = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.queue.core.windows.net"
+    table = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.table.core.windows.net"
+  }
+}
 
-# variable "private_dns_zone_ids_by_type" {
-#   description = "Mapping between subresource type and DNS zone IDs"
-#   type        = map(string)
-#   default = {
-#     blob  = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
-#     queue = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.queue.core.windows.net"
-#     table = "/subscriptions/944e28c1-401a-4c69-bf58-dfd5567c3b02/resourceGroups/ae-prod-dns-rg/providers/Microsoft.Network/privateDnsZones/privatelink.table.core.windows.net"
-#   }
-# }
+variable "storage_containers_contentaggregation" {
+  description = "List of storage containers to create for content aggregation"
+  type = list(object({
+    name                  = string
+    container_access_type = string
+  }))
+}
 
-# variable "private_dns_zone_ids_by_name" {
-#   description = "Mapping between subresource type and DNS zone name"
-#   type        = map(string)
-#   default = {
-#     blob  = "privatelink.blob.core.windows.net"
-#     queue = "privatelink.queue.core.windows.net"
-#     table = "privatelink.table.core.windows.net"
-#   }
-# }
+variable "storage_containers_ems" {
+  description = "List of storage containers to create for ems"
+  type = list(object({
+    name                  = string
+    container_access_type = string
+  }))
+}
 
-# variable "private_endpoints" {
-#   description = "List of private endpoints to create for storage account"
-#   type = list(object({
-#     name              = string
-#     subresource_name  = string # blob, queue, table, etc.
-#   }))
-# }

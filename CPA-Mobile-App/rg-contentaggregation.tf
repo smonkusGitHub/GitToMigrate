@@ -2,141 +2,132 @@
 # Module to create AVM Resource Group
 # -------------------------------------------------
 module "avm-res-resources-resourcegroup-content" {
-    source                          = "Azure/avm-res-resources-resourcegroup/azurerm"
-    version                         = "0.2.1"
-    name                            = local.resource_group_name_contentaggregation
-    location                        = var.location
-    tags                            = var.tags
+    source                            = "Azure/avm-res-resources-resourcegroup/azurerm"
+    version                           = "0.2.1"
+    name                              = local.resource_group_name_contentaggregation
+    location                          = var.location
+    tags                              = var.tags
 }
-
-# # ------------------------------------------------------------
-# # AzApi - Notification Hub Namespace
-# # ------------------------------------------------------------
-# resource "azapi_resource" "notificationHubNameSpace" {
-#     type                            = "Microsoft.NotificationHubs/namespaces@2023-10-01-preview"
-#     parent_id                       = module.avm-res-resources-resourcegroup-content.resource_id
-#     name                            = local.notification_hub_ns_name_contentaggregation
-#     location                        = var.location
-#     tags                            = var.tags  
-#     body = {
-#             properties = {
-#                 enabled             = true
-#                 namespaceType       = "NotificationHub"      
-#             }
-#                 sku = {
-#                 name                = "Free"
-#             }
-#     }
-#     schema_validation_enabled       = false
-#     response_export_values          = ["*"]
-# }
-
-# # ------------------------------------------------------------
-# # AzApi - Notification Hub
-# # ------------------------------------------------------------
-# resource "azapi_resource" "notificationHub" {
-#     type                            = "Microsoft.NotificationHubs/namespaces/notificationHubs@2023-10-01-preview"
-#     parent_id                       = azapi_resource.notificationHubNameSpace.id
-#     name                            = local.notification_hub_name_contentaggregation
-#     location                        = var.location
-#     tags                            = var.tags  
-#     body = {
-#             properties = {
-#                 fcmV1Credential = {
-#                     properties = {
-#                         clientEmail = var.sit_notification_hub_gcp_client_email
-#                         privateKey  = var.sit_notification_hub_gcp_private_key
-#                         projectId   = var.sit_notification_hub_gcp_project_id
-#                 }
-#             }
-#         }
-#     }
-#     schema_validation_enabled       = false
-#     response_export_values          = ["*"]
-# }
 
 # ------------------------------------------------------------
 # Module to create AVM Azure SQL Database
 # ------------------------------------------------------------
 module "avm-res-sql-server-database-contentaggregation" {
-    source                          = "Azure/avm-res-sql-server/azurerm//modules/database"
-    version                         = "0.1.3"
-    name                            = local.sql_database_name_contentaggregation
-    tags                            = var.tags
-    sql_server                      = { resource_id = module.avm-res-sql-server-shared.resource_id }
-    # Cheapest supported SKU
-    # Standard (S1) Cost per DTU (in AUD) 2.40 DTUs selected x 20 Estimated cost / month 48.06 AUD
-    sku_name                        = "S1" 
-    auto_pause_delay_in_minutes     = null   # Set to null to disable auto-pausess
-    collation                       = "SQL_Latin1_General_CP1_CI_AS"
-    create_mode                     = "Default"
-    ledger_enabled                  = false    
-    max_size_gb                     = 250
-    read_replica_count              = 0
-    read_scale                      = false
-    zone_redundant                  = false    
-    short_term_retention_policy     = {
-        retention_days              = 7
-        backup_interval_in_hours    = 12
+    source                            = "Azure/avm-res-sql-server/azurerm//modules/database"
+    version                           = "0.1.3"
+    name                              = local.sql_database_name_contentaggregation
+    tags                              = var.tags
+    sql_server                        = { resource_id = module.avm-res-sql-server-shared.resource_id }    
+    sku_name                          = local.sql_database_sku_name
+    auto_pause_delay_in_minutes       = local.sql_database_auto_pause_delay_in_minutes
+    collation                         = local.sql_database_collation
+    create_mode                       = local.sql_database_create_mode
+    ledger_enabled                    = false    
+    max_size_gb                       = local.sql_database_max_size_gb
+    min_capacity                      = local.sql_database_min_capacity
+    read_replica_count                = local.sql_database_read_replica_count
+    read_scale                        = false
+    zone_redundant                    = false    
+    storage_account_type            = local.storage_account_type
+    short_term_retention_policy       = {
+        retention_days                = local.sql_database_retention_days
+        backup_interval_in_hours      = local.sql_database_backup_interval_in_hours
       }
 }
 
-# # ------------------------------------------------------------
-# # Azurerm - Manages an Elastic Job Agent
-# # ------------------------------------------------------------
-# resource "azurerm_mssql_job_agent" "contentaggregation_job_agent" {
-#     name                            = local.sql_job_agent_name_contentaggregation
-#     location                        = var.location
-#     tags                            = var.tags
-#     database_id                     = module.avm-res-sql-server-database-contentaggregation.resource_id
-# }
+# ------------------------------------------------------------
+# AzApi - Notification Hub Namespace
+# ------------------------------------------------------------
+resource "azapi_resource" "notificationHubNameSpace" {
+    type                              = "Microsoft.NotificationHubs/namespaces@2023-10-01-preview"
+    parent_id                         = module.avm-res-resources-resourcegroup-content.resource_id
+    name                              = local.notification_hub_ns_name_contentaggregation
+    location                          = var.location
+    tags                              = var.tags  
+    body = {
+            properties = {
+                enabled               = true
+                namespaceType         = "NotificationHub"      
+            }
+                sku = {
+                name                  = "Free"
+            }
+    }
+    schema_validation_enabled         = false
+    response_export_values            = ["*"]
+}
 
-# # ------------------------------------------------------------
-# # Azurerm - Manages an Elastic Job Credential
-# # ------------------------------------------------------------
-# resource "azurerm_mssql_job_credential" "contentaggregation_job_agent_credential" {
-#     name                            = local.sql_job_agent_credential_name_contentaggregation
-#     job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
-#     username                        = var.sit_sql_admin_login
-#     password                        = var.sit_sql_admin_password 
-# }
+# ------------------------------------------------------------
+# AzApi - Notification Hub
+# ------------------------------------------------------------
+resource "azapi_resource" "notificationHub" {
+    type                              = "Microsoft.NotificationHubs/namespaces/notificationHubs@2023-10-01-preview"
+    parent_id                         = azapi_resource.notificationHubNameSpace.id
+    name                              = local.notification_hub_name_contentaggregation
+    location                          = var.location
+    tags                              = var.tags  
+    body = {
+            properties = {
+                fcmV1Credential = {
+                    properties = {
+                        clientEmail   = var.sit_notification_hub_gcp_client_email
+                        privateKey    = var.sit_notification_hub_gcp_private_key
+                        projectId     = var.sit_notification_hub_gcp_project_id
+                }
+            }
+        }
+    }
+    schema_validation_enabled         = false
+    response_export_values            = ["*"]
+}
 
-# # ------------------------------------------------------------
-# # Azurerm - Manages a Job Target Group
-# # ------------------------------------------------------------
-# resource "azurerm_mssql_job_target_group" "contentaggregation_job_target_group" {
-#     name                            = local.sql_job_target_group_name_contentaggregation
-#     job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
+# Set up endpoints locally, it didn't work on the locals.tf
+locals {
+  endpointsContent                    = toset(["blob"])
+}
 
-#     job_target {
-#         server_name                 = module.avm-res-sql-server-shared.resource_name
-#         job_credential_id           = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
-#     }
-# }
+# -------------------------------------------------
+# Module to create AVM Azure Storage account
+# -------------------------------------------------
+module "avm-res-storage-storageaccount-contentaggregation" {
+  source                              = "Azure/avm-res-storage-storageaccount/azurerm"
+  version                             = "0.5.0"
+  name                                = local.storage_name_contentaggregation
+  location                            = var.location
+  tags                                = var.tags
+  resource_group_name                 = module.avm-res-resources-resourcegroup-content.name
+  account_replication_type            = local.storageaccount_account_replication_type
+  account_tier                        = local.storageaccount_account_tier
+  account_kind                        = local.storageaccount_account_kind
+  https_traffic_only_enabled          = true
+  min_tls_version                     = local.storageaccount_min_tls_version
+  shared_access_key_enabled           = true
+  public_network_access_enabled       = false
+  default_to_oauth_authentication     = true
 
-# # ------------------------------------------------------------
-# # Azurerm - Manages an Elastic Job
-# # ------------------------------------------------------------
-# resource "azurerm_mssql_job" "contentaggregation_job" {
-#     name                            = local.sql_job_name_contentaggregation
-#     job_agent_id                    = azurerm_mssql_job_agent.contentaggregation_job_agent.id
-#     description                     = "Contentaggregation Job - Clear unwanted Notification data"
-# }
-
-# # ------------------------------------------------------------
-# # Azurerm - Manages an Elastic Job Step
-# # ------------------------------------------------------------
-# resource "azurerm_mssql_job_step" "contentaggregation_job_step1" {
-#     name                            = local.sql_job_step1_name_contentaggregation
-#     job_id                          = azurerm_mssql_job.contentaggregation_job.id
-#     job_credential_id               = azurerm_mssql_job_credential.contentaggregation_job_agent_credential.id
-#     job_target_group_id             = azurerm_mssql_job_target_group.contentaggregation_job_target_group.id
-#     job_step_index                  = 1
-#     sql_script                      = <<EOT
-#                                         DELETE FROM MEMBER_LOGINS
-#                                         WHERE MEMBER_ID IN (SELECT ml.MEMBER_ID
-#                                                             FROM MEMBER_LOGINS ml
-#                                                             GROUP BY ml.MEMBER_ID
-#                                                             HAVING COUNT(*) > 20);
-#                                         EOT
-# }
+  # create container from given set of values
+  containers = {
+    for container in var.storage_containers_contentaggregation : container.name => {
+      name                            = container.name
+      container_access_type           = container.container_access_type
+    }
+  }
+  
+  # create a private endpoint for each endpoint type
+  private_endpoints = {
+    for endpoint in local.endpointsContent :
+    endpoint => {
+      # the name must be set to avoid conflicting resources.
+      name                            = "pe-${endpoint}-${local.storage_name_contentaggregation}"
+      subnet_resource_id              = var.sit_private_endpoint_subnet_id
+      subresource_name                = endpoint      
+      # these are optional but illustrate making well-aligned service connection & NIC names.
+      private_service_connection_name = "psc-${endpoint}-${local.storage_name_contentaggregation}"
+      network_interface_name          = "nic-pe-${endpoint}-${local.storage_name_contentaggregation}"
+      inherit_lock                    = false
+      location                        = var.location
+      tags                            = var.tags
+      private_dns_zone_resource_ids   = [var.private_dns_zone_ids_by_type[endpoint]]
+    }
+  }     
+}
