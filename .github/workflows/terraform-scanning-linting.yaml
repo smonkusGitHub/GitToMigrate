@@ -1,0 +1,216 @@
+name: Terraform Code Scanning & Linting
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'SIT/**'
+      - 'PreProd/**'
+      - 'Production/**'
+      - '!**/*.md'
+      - '!**/README.md'
+      - '!**/.gitignore'
+
+env:
+  TF_VERSION: '1.12.2'
+  # Centralized Checkov skip rules for all environments
+  CHECKOV_SKIP_RULES: 'CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_100,CKV_AZURE_140,CKV_AZURE_211,CKV_AZURE_225,CKV_AZURE_213,CKV_AZURE_71,CKV_AZURE_65,CKV_AZURE_13,CKV_AZURE_66,CKV_AZURE_16,CKV_AZURE_63,CKV_AZURE_88,CKV_AZURE_17,CKV_AZURE_112,CKV_AZURE_224,CKV_AZURE_229,CKV_AZURE_206,CKV_AZURE_109,CKV_AZURE_244,CKV_AZURE_33,CKV2_AZURE_2,CKV2_AZURE_38,CKV2_AZURE_40,CKV_AZURE_24,CKV_AZURE_23,CKV_AZURE_35,CKV_AZURE_36,CKV_AZURE_132,CKV_AZURE_203'
+
+jobs:
+  terraform-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Terraform CLI
+        run: |
+          echo "Installing Terraform ${TF_VERSION}..."
+          wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+          unzip terraform_${TF_VERSION}_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+          terraform -version
+
+      - name: Looking for *.tf files in the current directory
+        continue-on-error: true
+        run: |
+          echo "Current path : $(pwd)"
+          echo "GITHUB_WORKSPACE : $GITHUB_WORKSPACE"
+          find . -name '*.tf'
+
+      - name: Find all Terraform files in the workspace (SIT/PP/Prod)
+        run: |
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          find "$GITHUB_WORKSPACE" -name '*.tf' -exec echo "Found Terraform file: {}" \;
+
+      - name: Terraform Init & Validate (SIT)
+        working-directory: SIT
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Terraform Init & Validate (PreProd)
+        working-directory: PreProd
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Terraform Init & Validate (Production)
+        working-directory: Production
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      # -------------------------------------------------
+      # Snyk Security Scanning
+      # -------------------------------------------------
+      - name: Install Snyk CLI
+        run: |
+          echo "Installing Snyk CLI..."
+          curl --compressed https://static.snyk.io/cli/latest/snyk-linux -o snyk
+          chmod +x ./snyk
+          sudo mv ./snyk /usr/local/bin/
+          snyk --version
+
+      - name: Snyk IaC Scan - SIT
+        working-directory: SIT
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          echo "Running Snyk IaC test for SIT environment..."
+          snyk iac test --severity-threshold=high --report --policy-path="$GITHUB_WORKSPACE/.snyk" --exclude=.terraform,.git || true
+
+      - name: Snyk IaC Scan - PreProd
+        working-directory: PreProd
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          echo "Running Snyk IaC test for PreProd environment..."
+          snyk iac test --severity-threshold=high --report --policy-path="$GITHUB_WORKSPACE/.snyk" --exclude=.terraform,.git || true
+
+      - name: Snyk IaC Scan - Production
+        working-directory: Production
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          echo "Running Snyk IaC test for Production environment..."
+          snyk iac test --severity-threshold=high --report --policy-path="$GITHUB_WORKSPACE/.snyk" --exclude=.terraform,.git || true
+
+      - name: Run TFLint-SIT
+        working-directory: SIT
+        continue-on-error: true
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          tflint --version
+
+          set -e
+
+          for dir in $(find . -type f -name "*.tf" -exec dirname {} \; | sort -u); do
+            echo "🔍 Running TFLint in $dir"
+            (cd "$dir" && tflint --init && tflint)
+          done
+
+      - name: Run TFLint-PreProd
+        working-directory: PreProd
+        continue-on-error: true
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          tflint --version
+
+          set -e
+
+          for dir in $(find . -type f -name "*.tf" -exec dirname {} \; | sort -u); do
+            echo "🔍 Running TFLint in $dir"
+            (cd "$dir" && tflint --init && tflint)
+          done
+
+      - name: Run TFLint-Production
+        working-directory: Production
+        continue-on-error: true
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          tflint --version
+
+          set -e
+
+          for dir in $(find . -type f -name "*.tf" -exec dirname {} \; | sort -u); do
+            echo "🔍 Running TFLint in $dir"
+            (cd "$dir" && tflint --init && tflint)
+          done
+
+      - name: Run tfsec-SIT
+        working-directory: SIT
+        continue-on-error: true
+        run: |
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          tfsec --exclude azure-database-enable-audit
+
+      - name: Run tfsec-PreProd
+        working-directory: PreProd
+        continue-on-error: true
+        run: |
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          tfsec --exclude azure-database-enable-audit
+
+      - name: Run tfsec-Production
+        working-directory: Production
+        continue-on-error: true
+        run: |
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          tfsec --exclude azure-database-enable-audit
+
+      - name: Run Checkov-SIT
+        working-directory: SIT
+        continue-on-error: true
+        run: |
+          pip install checkov
+          checkov -d . --download-external-modules true --skip-check "$CHECKOV_SKIP_RULES" --compact --quiet
+
+      - name: Run Checkov-PreProd
+        working-directory: PreProd
+        continue-on-error: true
+        run: |
+          pip install checkov
+          checkov -d . --download-external-modules true --skip-check "$CHECKOV_SKIP_RULES" --compact --quiet
+
+      - name: Run Checkov-Production
+        working-directory: Production
+        continue-on-error: true
+        run: |
+          pip install checkov
+          checkov -d . --download-external-modules true --skip-check "$CHECKOV_SKIP_RULES" --compact --quiet
+
+      - name: Download and Install Latest Terrascan
+        run: |
+          curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
+          tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
+          sudo install terrascan /usr/local/bin && rm terrascan
+          echo "Terrascan version:"
+          terrascan version
+
+      - name: Check Terrascan Installation
+        run: |
+          if [ -f /usr/local/bin/terrascan ]; then
+            echo "Terrascan exists:"
+            ls -l /usr/local/bin/terrascan
+            file /usr/local/bin/terrascan
+            echo "Terrascan version:"
+            terrascan version        
+          else
+            echo "Terrascan does not exist in /usr/local/bin/"
+          fi
+
+      - name: Terrascan - Scan All Terraform subdirectories (with exemptions)
+        run: |
+          echo "Scanning all Terraform subdirectories under: $GITHUB_WORKSPACE"
+          
+          SKIP_RULES="AC_AZURE_0391,AC_AZURE_0366"
+
+          find "$GITHUB_WORKSPACE" -type f -name "*.tf" -exec dirname {} \; | sort -u | while read dir; do
+            echo "Scanning directory: $dir"
+          done

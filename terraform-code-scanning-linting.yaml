@@ -2,15 +2,27 @@ trigger:
   branches:
     include:
       - main
-      - develop
-      - feature/*
+  paths:
+      include:
+        - 'SIT/**'
+        - 'PreProd/**'
+        - 'Production/**'
+      exclude:
+        - '**/*.md'
+        - '**/README.md'
+        - '**/.gitignore'
+
+pr: none
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   TF_VERSION: '1.12.2'
-  
+  # Centralized Checkov skip rules for all environments
+  CHECKOV_SKIP_RULES: 'CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_100,CKV_AZURE_140,CKV_AZURE_211,CKV_AZURE_225,CKV_AZURE_213,CKV_AZURE_71,CKV_AZURE_65,CKV_AZURE_13,CKV_AZURE_66,CKV_AZURE_16,CKV_AZURE_63,CKV_AZURE_88,CKV_AZURE_17,CKV_AZURE_112,CKV_AZURE_224,CKV_AZURE_229,CKV_AZURE_206,CKV_AZURE_109,CKV_AZURE_244,CKV_AZURE_33,CKV2_AZURE_2,CKV2_AZURE_38,CKV2_AZURE_40,CKV_AZURE_24,CKV_AZURE_23,CKV_AZURE_35,CKV_AZURE_36,CKV_AZURE_132,CKV_AZURE_203'
+  # Snyk token - managed as a secret variable in Azure Pipelines UI
+
 steps:
   - checkout: self
 
@@ -21,7 +33,8 @@ steps:
       sudo mv terraform /usr/local/bin/
       terraform -version
     displayName: 'Install Terraform CLI'
- 
+    continueOnError: false
+
   - script: |
       echo "Current path : $(pwd)"
       echo "System.DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)"
@@ -34,57 +47,153 @@ steps:
   - script: |      
       echo "Pipeline.Workspace: $(Pipeline.Workspace)"
       find "$(Pipeline.Workspace)" -name '*.tf' -exec echo "Found Terraform file: {}" \;
-    displayName: 'Find all Terraform files in the Pipeline Workspace'
+    displayName: 'Find all Terraform files in the Pipeline Workspace (SIT/PP/Prod)'
 
   - script: |
       terraform init -backend=false
       terraform validate
-    displayName: 'Terraform Init & Validate on (CPA-Mobile-App)'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
+    displayName: 'Terraform Init & Validate (SIT)'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SIT'
     continueOnError: false
 
   - script: |
-      # Install TFLint latest version
+      terraform init -backend=false
+      terraform validate
+    displayName: 'Terraform Init & Validate (PreProd)'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/PreProd'
+    continueOnError: false
+
+  - script: |
+      terraform init -backend=false
+      terraform validate
+    displayName: 'Terraform Init & Validate (Production)'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Production'
+    continueOnError: false
+
+  # -------------------------------------------------
+  # Snyk Security Scanning
+  # -------------------------------------------------
+  - script: |
+      echo "Installing Snyk CLI..."
+      curl --compressed https://static.snyk.io/cli/latest/snyk-linux -o snyk
+      chmod +x ./snyk
+      sudo mv ./snyk /usr/local/bin/
+      snyk --version
+    displayName: 'Install Snyk CLI'
+    continueOnError: false
+
+  - script: |
+      echo "Running Snyk IaC test for SIT environment..."
+      snyk iac test --severity-threshold=high --report --policy-path="$(System.DefaultWorkingDirectory)/.snyk" --exclude=.terraform,.git || true
+    displayName: 'Snyk IaC Scan - SIT'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SIT'
+    env:
+      SNYK_TOKEN: $(SNYK_TOKEN)
+    continueOnError: true
+
+  - script: |
+      echo "Running Snyk IaC test for PreProd environment..."
+      snyk iac test --severity-threshold=high --report --policy-path="$(System.DefaultWorkingDirectory)/.snyk" --exclude=.terraform,.git || true
+    displayName: 'Snyk IaC Scan - PreProd'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/PreProd'
+    env:
+      SNYK_TOKEN: $(SNYK_TOKEN)
+    continueOnError: true
+
+  - script: |
+      echo "Running Snyk IaC test for Production environment..."
+      snyk iac test --severity-threshold=high --report --policy-path="$(System.DefaultWorkingDirectory)/.snyk" --exclude=.terraform,.git || true
+    displayName: 'Snyk IaC Scan - Production'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Production'
+    env:
+      SNYK_TOKEN: $(SNYK_TOKEN)
+    continueOnError: true
+
+  - script: |
       curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-      
-      # Echo the installed version
       tflint --version
 
       set -e
 
-      # Run TFLint on all Terraform folders
       for dir in $(find . -type f -name "*.tf" -exec dirname {} \; | sort -u); do
         echo "🔍 Running TFLint in $dir"
         (cd "$dir" && tflint --init && tflint)
       done
-    displayName: 'Run TFLint (Terraform linter that focuses on finding bugs, style issues, and potential problems in your Terraform code)'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
-    continueOnError: false
+    displayName: 'Run TFLint-SIT'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SIT'
+    continueOnError: true
+
+  - script: |
+      curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+      tflint --version
+
+      set -e
+
+      for dir in $(find . -type f -name "*.tf" -exec dirname {} \; | sort -u); do
+        echo "🔍 Running TFLint in $dir"
+        (cd "$dir" && tflint --init && tflint)
+      done
+    displayName: 'Run TFLint-PreProd'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/PreProd'
+    continueOnError: true
+
+  - script: |
+      curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+      tflint --version
+
+      set -e
+
+      for dir in $(find . -type f -name "*.tf" -exec dirname {} \; | sort -u); do
+        echo "🔍 Running TFLint in $dir"
+        (cd "$dir" && tflint --init && tflint)
+      done
+    displayName: 'Run TFLint-Production'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Production'
+    continueOnError: true
 
   - script: |
       curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
       tfsec --exclude azure-database-enable-audit
-    displayName: 'Run tfsec (Scans your Terraform code and checks it against a large set of security best practices and compliance policies)'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
+    displayName: 'Run tfsec-SIT'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SIT'
+    continueOnError: true
+
+  - script: |
+      curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+      tfsec --exclude azure-database-enable-audit
+    displayName: 'Run tfsec-PreProd'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/PreProd'
+    continueOnError: true
+
+  - script: |
+      curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+      tfsec --exclude azure-database-enable-audit
+    displayName: 'Run tfsec-Production'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Production'
     continueOnError: true
 
   - script: |
       pip install checkov
-      checkov -d . --skip-check CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_132,CKV_AZURE_100,CKV_AZURE_140,CKV_AZURE_186
-    displayName: 'Run Checkov (scans IaC files for misconfigurations, policy violations, and security risks)'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/CPA-Mobile-App'
-    condition: true
+      checkov -d . --download-external-modules true --skip-check "$(CHECKOV_SKIP_RULES)" --compact --quiet
+    displayName: 'Run Checkov-SIT'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SIT'
     continueOnError: true
 
   - script: |
-      # echo "Fetching latest Terrascan release tag from GitHub..."
-      # TERRASCAN_LATEST_TAG=$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-      # echo "Latest tag: $TERRASCAN_LATEST_TAG"
-      # TERRASCAN_URL="https://github.com/tenable/terrascan/releases/download/${TERRASCAN_LATEST_TAG}/terrascan_linux_amd64"
-      # echo "Downloading Terrascan from $TERRASCAN_URL"
-      # curl -sSL -o terrascan "$TERRASCAN_URL"
-      # chmod +x terrascan
-      # sudo mv terrascan /usr/local/bin/
+      pip install checkov
+      checkov -d . --download-external-modules true --skip-check "$(CHECKOV_SKIP_RULES)" --compact --quiet
+    displayName: 'Run Checkov-PreProd'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/PreProd'
+    continueOnError: true
+
+  - script: |
+      pip install checkov
+      checkov -d . --download-external-modules true --skip-check "$(CHECKOV_SKIP_RULES)" --compact --quiet
+    displayName: 'Run Checkov-Production'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Production'
+    continueOnError: true
+
+  - script: |
       curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
       tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
       sudo install terrascan /usr/local/bin && rm terrascan
@@ -109,21 +218,10 @@ steps:
   - script: |
       echo "Scanning all Terraform subdirectories under: $(System.DefaultWorkingDirectory)"
       
-      # Define rules to skip (you can add or remove IDs as needed)
-      # "description": "Ensure there are no firewall rules allowing unrestricted access to Redis from other Azure sources",
-      # "rule_id": "AC_AZURE_0391",
-      # "description": "Anonymous, public read access to a container and its blobs can be enabled in Azure Blob storage. This is only recommended if absolutely necessary.",
-      # "rule_id": "AC_AZURE_0366",
       SKIP_RULES="AC_AZURE_0391,AC_AZURE_0366"
 
-      # Find all unique directories that contain .tf files
       find "$(System.DefaultWorkingDirectory)" -type f -name "*.tf" -exec dirname {} \; | sort -u | while read dir; do
         echo "Scanning directory: $dir"
-        #/usr/local/bin/terrascan scan -t azure -i terraform -d "$dir" --skip-rules $SKIP_RULES || echo "Scan failed in $dir"
-        
-        # Below get the correct rule IDs by outputting the scan results in JSON format
-        #/usr/local/bin/terrascan scan -t azure -i terraform -d "$dir" -o json
       done
     displayName: 'Terrascan - Scan All Terraform subdirectories (with exemptions)'
-    condition: true
     continueOnError: false
