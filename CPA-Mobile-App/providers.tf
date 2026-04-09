@@ -16,11 +16,11 @@ terraform {
     }
   }
   cloud {
-    organization = "0"
+    organization = "CPAAustralia"
     hostname     = "app.terraform.io"
     workspaces {
-      project = "DevOps---CodeTest"
-      name    = "DevOps - CodeTest"
+      project = "Mobile App - Non-Prod"
+      name    = "mobile-app-sit"
     }
   }
 }
