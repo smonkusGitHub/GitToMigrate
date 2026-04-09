@@ -140,21 +140,21 @@ module "avm-res-network-privateendpoint-st-course-queue" {
     subresource_names               = ["queue"]
 }
 
-# # ------------------------------------------------------------
-# # Azurerm - Private Endpoint (table)
-# # --------------------------------------- ---------------------
-# module "avm-res-network-privateendpoint-st-course-table" {
-#     source                          = "Azure/avm-res-network-privateendpoint/azurerm"
-#     version                         = "0.2.0"
-#     name                            = local.private_endpoint_st_name_course_table
-#     location                        = var.location
-#     tags                            = var.tags
-#     network_interface_name          = local.private_network_interface_st_name_course_table
-#     private_connection_resource_id  = module.avm-res-storage-storageaccount-course.resource_id
-#     resource_group_name             = module.avm-res-resources-resourcegroup-course.name
-#     subnet_resource_id              = var.sit_private_endpoint_subnet_id
-#     private_dns_zone_group_name     = local.private_dns_zone_group_st_name_course_table
-#     private_dns_zone_resource_ids   = [local.private_dns_zone_resource_st_id_course_table]
-#     private_service_connection_name = local.private_service_connection_st_name_course_table
-#     subresource_names               = ["table"]
-# }
+# ------------------------------------------------------------
+# Azurerm - Private Endpoint (table)
+# --------------------------------------- ---------------------
+module "avm-res-network-privateendpoint-st-course-table" {
+    source                          = "Azure/avm-res-network-privateendpoint/azurerm"
+    version                         = "0.2.0"
+    name                            = local.private_endpoint_st_name_course_table
+    location                        = var.location
+    tags                            = var.tags
+    network_interface_name          = local.private_network_interface_st_name_course_table
+    private_connection_resource_id  = module.avm-res-storage-storageaccount-course.resource_id
+    resource_group_name             = module.avm-res-resources-resourcegroup-course.name
+    subnet_resource_id              = var.sit_private_endpoint_subnet_id
+    private_dns_zone_group_name     = local.private_dns_zone_group_st_name_course_table
+    private_dns_zone_resource_ids   = [local.private_dns_zone_resource_st_id_course_table]
+    private_service_connection_name = local.private_service_connection_st_name_course_table
+    subresource_names               = ["table"]
+}
