@@ -3,6 +3,7 @@ name: Terraform Scanning & Linting (CPA-Mobile-App)
 on:
   push:
     branches:
+      - master
       - main
     paths:
       - 'CPA-Mobile-App/**/*.tf'
