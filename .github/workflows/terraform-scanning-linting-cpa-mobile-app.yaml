@@ -6,23 +6,15 @@ on:
       - main
     paths:
       - 'CPA-Mobile-App/**/*.tf'
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
-    paths:
-      - 'CPA-Mobile-App/**/*.tf'
+  workflow_dispatch:
 
 env:
   TF_VERSION: '1.12.2'
-  # Centralized Checkov skip rules for all environments
   CHECKOV_SKIP_RULES: 'CKV_TF_1,CKV_TF_2,CKV2_AZURE_21,CKV_AZURE_100,CKV_AZURE_140,CKV_AZURE_211,CKV_AZURE_225,CKV_AZURE_213,CKV_AZURE_71,CKV_AZURE_65,CKV_AZURE_13,CKV_AZURE_66,CKV_AZURE_16,CKV_AZURE_63,CKV_AZURE_88,CKV_AZURE_17,CKV_AZURE_112,CKV_AZURE_224,CKV_AZURE_229,CKV_AZURE_206,CKV_AZURE_109,CKV_AZURE_244,CKV_AZURE_33,CKV2_AZURE_2,CKV2_AZURE_38,CKV2_AZURE_40,CKV_AZURE_24,CKV_AZURE_23,CKV_AZURE_35,CKV_AZURE_36,CKV_AZURE_132,CKV_AZURE_203'
 
 jobs:
-  terraform-scan:
+  terraform-scan-cpa-mobile-app:
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
 
     steps:
       - name: Checkout code
@@ -36,13 +28,6 @@ jobs:
           sudo mv terraform /usr/local/bin/
           terraform -version
 
-      - name: Looking for *.tf files in the current directory
-        continue-on-error: true
-        run: |
-          echo "Current path : $(pwd)"
-          echo "GITHUB_WORKSPACE : $GITHUB_WORKSPACE"
-          find . -name '*.tf'
-
       - name: Find all Terraform files in CPA-Mobile-App
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
@@ -54,9 +39,6 @@ jobs:
           terraform init -backend=false
           terraform validate
 
-      # -------------------------------------------------
-      # Snyk Security Scanning
-      # -------------------------------------------------
       - name: Install Snyk CLI
         run: |
           echo "Installing Snyk CLI..."
@@ -84,7 +66,7 @@ jobs:
           set -e
 
           for dir in $(find . -type f -name "*.tf" -exec dirname {} \; | sort -u); do
-            echo "🔍 Running TFLint in $dir"
+            echo "Running TFLint in $dir"
             (cd "$dir" && tflint --init && tflint)
           done
 
@@ -117,15 +99,15 @@ jobs:
             ls -l /usr/local/bin/terrascan
             file /usr/local/bin/terrascan
             echo "Terrascan version:"
-            terrascan version        
+            terrascan version
           else
             echo "Terrascan does not exist in /usr/local/bin/"
           fi
 
-      - name: Terrascan - Scan All Terraform subdirectories (with exemptions)
+      - name: Terrascan - Scan Terraform subdirectories in CPA-Mobile-App
         run: |
           echo "Scanning all Terraform subdirectories under: $GITHUB_WORKSPACE/CPA-Mobile-App"
-          
+
           SKIP_RULES="AC_AZURE_0391,AC_AZURE_0366"
 
           find "$GITHUB_WORKSPACE/CPA-Mobile-App" -type f -name "*.tf" -exec dirname {} \; | sort -u | while read dir; do
